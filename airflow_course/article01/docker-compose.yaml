@@ -1,3 +1,6 @@
+#--- финальный конфиг для Урок 1. Apache Airflow с нуля: Архитектура, отличие от Cron и запуск в Docker https://bigdataschool.ru/blog/news/apache-airflow-architecture-docker-setup/
+#--- статей посвященных бесплатному курсу ао Apache Airflow для начинающих
+#---- Docker yaml для Apache Airflow 2.8.1 c LocalExecutor
 version: "3.8"
 
 x-airflow-common: &airflow-common
