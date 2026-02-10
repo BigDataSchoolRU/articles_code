@@ -1,0 +1,7 @@
+FROM daskdev/dask:2023.12.1
+
+COPY requirements-dask.txt /tmp/requirements-dask.txt
+
+RUN pip install --no-cache-dir -r /tmp/requirements-dask.txt \
+ && python -c "import s3fs,fsspec,pandas; print('OK', s3fs.__version__, fsspec.__version__, pandas.__version__)"
+
