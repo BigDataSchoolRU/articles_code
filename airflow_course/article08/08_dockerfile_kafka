@@ -1,0 +1,52 @@
+FROM apache/airflow:2.8.1-python3.10
+
+USER root
+
+# 1. ОБЪЕДИНЕННАЯ УСТАНОВКА СИСТЕМНЫХ ПАКЕТОВ
+# gcc, libkrb5-dev... — нужны для компиляции HDFS провайдера (Урок 5)
+# default-jdk, procps, curl — нужны для работы Spark (Урок 6)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+         gcc \
+         libkrb5-dev \
+         krb5-user \
+         libffi-dev \
+         default-jdk \
+         procps \
+         curl \
+  && apt-get autoremove -yqq --purge \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# 2. НАСТРОЙКА JAVA (Урок 6)
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+
+# 3. УСТАНОВКА SPARK-КЛИЕНТА (Урок 6)
+ENV SPARK_VERSION=3.5.1
+ENV HADOOP_VERSION=3
+RUN curl -O https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
+    && tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt/ \
+    && rm spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
+    && ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} /opt/spark
+
+# 4. НАСТРОЙКА ПУТЕЙ SPARK
+ENV SPARK_HOME=/opt/spark
+ENV PATH=$PATH:$SPARK_HOME/bin:
+
+USER airflow
+
+ARG AIRFLOW_VERSION=2.8.1
+ARG PYTHON_VERSION=3.10
+ARG CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+
+# 5. УСТАНОВКА ПРОВАЙДЕРОВ
+# Ставим сразу оба: и для HDFS (чтобы работал DAG из 5 урока), и для Spark
+RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"\
+    apache-airflow-providers-apache-hdfs \
+    apache-airflow-providers-apache-spark \
+    apache-airflow-providers-apache-kafka \
+    "dask==2023.12.1" \
+    "distributed==2023.12.1" \
+    s3fs \
+    pandas
+
