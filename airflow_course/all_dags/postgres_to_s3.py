@@ -7,7 +7,7 @@ import csv
 import os
 
 # Название бакета (должен быть создан заранее!)
-BUCKET_NAME = "airflow-bucket" 
+BUCKET_NAME = "airflow-course" 
 # Имя файла с датой запуска
 KEY_NAME = "users_export_{{ ds }}.csv"
 
