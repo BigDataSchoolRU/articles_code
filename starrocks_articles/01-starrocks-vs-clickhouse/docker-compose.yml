@@ -1,0 +1,45 @@
+# Код к статье "StarRocks против ClickHouse: сравнение архитектур для аналитики"
+# из серии материалов по StarRocks, "Школа Больших Данных".
+# Полный текст статьи: https://bigdataschool.ru/blog/news/starrocks-vs-clickhouse-analytics-architecture/
+# Автор: Bigdataschool.ru   "Школа Больших Данных"
+# Онлайн-курс по StarRocks: https://bigdataschool.ru/courses/starrocks_online_datawarehouse_htap/
+#
+# Проверено для StarRocks 3.5.0 и ClickHouse 26.3 LTS
+# ВАЖНО. Перед первым запуском на хосте задать параметр ядра, иначе BE-нода StarRocks упадёт:
+#   sudo sysctl -w vm.max_map_count=2000000
+#   echo 'vm.max_map_count=2000000' | sudo tee /etc/sysctl.d/99-starrocks.conf
+# Контейнеру allin1 нужно минимум 3-4 ГБ свободной RAM, первый старт FE занимает до 90 секунд.
+services:
+  starrocks:
+    image: starrocks/allin1-ubuntu:3.5.0
+    container_name: starrocks
+    ports:
+      - "9030:9030"   # MySQL-протокол для FE
+      - "8030:8030"   # HTTP FE
+      - "8040:8040"   # HTTP BE
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    # Том на /data/deploy НЕ монтируем. Там лежит entrypoint.sh и бинарники образа,
+    # пустой хостовый том их перекроет и контейнер упадёт с exit 127.
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.3
+    container_name: clickhouse
+    ports:
+      - "8123:8123"   # HTTP
+      - "9000:9000"   # нативный протокол
+    environment:
+      # Способ 1. Переменные окружения создают отдельного пользователя с паролем
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: Str0ngPass
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - ./data/clickhouse:/var/lib/clickhouse
+      # Способ 2. Конфиг закрывает штатного пользователя default паролем
+      - ./clickhouse/users.d:/etc/clickhouse-server/users.d:ro
