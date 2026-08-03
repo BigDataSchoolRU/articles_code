@@ -12,7 +12,7 @@
 не идти дальше вслепую. Идем сверху вниз.
 
 Окружение:
-- Kafka 3.9.2 (KRaft), брокеры 10.140.0.91:9092, 10.140.0.92:9092, 10.140.0.93:9092
+- Kafka 3.9.2 (KRaft), брокеры kafka1:9092, kafka2:9092, kafka3:9092
 - StarRocks 3.5.0 (allin1), база shop уже создана
 - Python 3.12 на машине, откуда запускаем продюсер
 
@@ -28,7 +28,7 @@
 
 ```bash
 # проверка TCP-доступа к брокерам из контейнера StarRocks средствами bash
-for ip in 10.140.0.91 10.140.0.92 10.140.0.93; do
+for ip in kafka1 kafka2 kafka3; do
   docker exec starrocks bash -c "timeout 3 bash -c '</dev/tcp/${ip}/9092' && echo ${ip}:9092 OK || echo ${ip}:9092 FAIL"
 done
 ```
@@ -38,7 +38,7 @@ done
 отдельно.
 
 ```bash
-for ip in 10.140.0.91 10.140.0.92 10.140.0.93; do
+for ip in kafka1 kafka2 kafka3; do
   timeout 3 bash -c "</dev/tcp/${ip}/9092" && echo ${ip} OK || echo ${ip} FAIL
 done
 ```
@@ -52,11 +52,11 @@ done
 
 ```bash
 # протестировано для Apache Kafka 3.9.2 (KRaft)
-kafka-topics.sh --bootstrap-server 10.140.0.91:9092 \
+kafka-topics.sh --bootstrap-server kafka1:9092 \
   --create --topic orders --partitions 3 --replication-factor 3
 
 # проверка
-kafka-topics.sh --bootstrap-server 10.140.0.91:9092 --describe --topic orders
+kafka-topics.sh --bootstrap-server kafka1:9092 --describe --topic orders
 ```
 
 В выводе describe должно быть три партиции с назначенными лидерами и репликами.
@@ -92,7 +92,7 @@ python3 producer.py
 выходим.
 
 ```bash
-kafka-console-consumer.sh --bootstrap-server 10.140.0.91:9092 \
+kafka-console-consumer.sh --bootstrap-server kafka1:9092 \
   --topic orders --from-beginning --max-messages 5
 ```
 
@@ -143,7 +143,7 @@ PROPERTIES (
     "max_error_number" = "100"
 )
 FROM KAFKA (
-    "kafka_broker_list" = "10.140.0.91:9092,10.140.0.92:9092,10.140.0.93:9092",
+    "kafka_broker_list" = "kafka1:9092,kafka2:9092,kafka3:9092",
     "kafka_topic" = "orders",
     "property.kafka_default_offsets" = "OFFSET_BEGINNING"
 );
@@ -237,18 +237,10 @@ STOP ROUTINE LOAD FOR shop.orders_stream;
 ```bash
 # остановить продюсер: Ctrl+C в его терминале
 # при необходимости удалить топик
-kafka-topics.sh --bootstrap-server 10.140.0.91:9092 --delete --topic orders
+kafka-topics.sh --bootstrap-server kafka1:9092 --delete --topic orders
 ```
 
 ```sql
 -- при необходимости удалить таблицу
 DROP TABLE shop.orders_rt;
 ```
-
----
-
-## Чек-лист для скриншотов в статью
-
-- SHOW ROUTINE LOAD со State RUNNING и растущим Progress (Шаг 7).
-- Два последовательных SELECT count с разными числами, чтобы показать рост потока (Шаг 8).
-- Свежие строки из orders_rt с event_time (Шаг 8).

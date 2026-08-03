@@ -4,6 +4,7 @@
 Полный текст статьи: https://bigdataschool.ru/blog/news/starrocks-vs-clickhouse-analytics-architecture/
 
 ## Файлы
+- `__pycache__/generate_dataset.cpython-310.pyc`
 - `clickhouse/users.d/default-password.xml`
 - `dcl.sql`
 - `ddl_clickhouse.sql`

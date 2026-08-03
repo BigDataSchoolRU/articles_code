@@ -6,7 +6,7 @@
 --
 -- протестировано для StarRocks 3.5.0
 -- Потоковая загрузка JSON-событий заказов из Kafka в StarRocks через Routine Load.
--- Kafka 3.9.2, брокеры 10.140.0.91-93:9092, топик orders.
+-- Kafka 3.9.2, брокеры kafka1-3:9092 (замените на адреса своих брокеров), топик orders.
 -- Предусловие: BE-нода StarRocks должна иметь сетевой доступ к брокерам.
 
 USE shop;
@@ -43,7 +43,7 @@ PROPERTIES (
     "max_error_number" = "100"
 )
 FROM KAFKA (
-    "kafka_broker_list" = "10.140.0.91:9092,10.140.0.92:9092,10.140.0.93:9092",
+    "kafka_broker_list" = "kafka1:9092,kafka2:9092,kafka3:9092",
     "kafka_topic" = "orders",
     "property.kafka_default_offsets" = "OFFSET_BEGINNING"
 );

@@ -4,6 +4,7 @@
 Полный текст статьи: https://bigdataschool.ru/blog/news/starrocks-routine-load-kafka/
 
 ## Файлы
+- `__pycache__/producer.cpython-310.pyc`
 - `producer.py`
 - `routine_load.sql`
 - `RUNBOOK_routine_load.md`

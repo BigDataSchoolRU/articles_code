@@ -21,7 +21,8 @@ import time
 from datetime import datetime, date, timedelta
 from kafka import KafkaProducer
 
-BROKERS = ["10.140.0.91:9092", "10.140.0.92:9092", "10.140.0.93:9092"]
+# замените на адреса своих брокеров Kafka
+BROKERS = ["kafka1:9092", "kafka2:9092", "kafka3:9092"]
 TOPIC = "orders"
 STATUSES = ["paid", "shipped", "cancelled"]
 EVENTS_PER_SEC = 50  # темп генерации
