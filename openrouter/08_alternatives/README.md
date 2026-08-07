@@ -1,6 +1,6 @@
 # OpenRouter против альтернатив
 
-Код к статье «OpenRouter против альтернатив» на сайте BigDataSchool: (URL появится после публикации)
+Код к статье «OpenRouter против альтернатив» на сайте BigDataSchool: https://bigdataschool.ru/blog/news/openrouter-vs-alternatives-litellm/
 
 ## Состав
 - `litellm_demo.py` - LiteLLM как self-hosted слой, ходит в OpenRouter через префикс модели `openrouter/`.
