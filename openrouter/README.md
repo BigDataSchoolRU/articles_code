@@ -12,4 +12,4 @@
 6. [06_multimodality](./06_multimodality/) - Мультимодальность: картинки, аудио, видео. https://bigdataschool.ru/blog/news/openrouter-multimodality-image-audio-video/
 7. [07_privacy_team](./07_privacy_team/) - Приватность, безопасность и работа командой. https://bigdataschool.ru/blog/news/openrouter-privacy-byok-team/
 8. [08_alternatives](./08_alternatives/) - OpenRouter против альтернатив. https://bigdataschool.ru/blog/news/openrouter-vs-alternatives-litellm/
-9. [09_assistant_capstone](./09_assistant_capstone/) - Капстоун: дешёвый мультимодальный ассистент на русских эмбеддингах. https://bigdataschool.ru/blog/news/openrouter-multimodal-assistant-capstone/
+9. [09_assistant_capstone](./09_assistant_capstone/) - Финальный проект: дешёвый мультимодальный ассистент на русских эмбеддингах. https://bigdataschool.ru/blog/news/openrouter-multimodal-assistant-capstone/
