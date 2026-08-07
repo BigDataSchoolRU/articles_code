@@ -1,0 +1,66 @@
+{
+  "name": "OpenRouter контент-флоу",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "b1a1c001-0001-4a01-8a01-000000000001",
+      "name": "Запуск вручную",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1000000-0000-4000-8000-000000000001",
+              "name": "topic",
+              "value": "OpenRouter в n8n без кода",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1a1c001-0002-4a01-8a01-000000000002",
+      "name": "Тема",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer YOUR_OPENROUTER_API_KEY" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'openai/gpt-4o-mini', messages: [ { role: 'user', content: 'Напиши короткий пост в блог про: ' + $json.topic } ] }) }}",
+        "options": {}
+      },
+      "id": "b1a1c001-0003-4a01-8a01-000000000003",
+      "name": "OpenRouter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Запуск вручную": {
+      "main": [[{ "node": "Тема", "type": "main", "index": 0 }]]
+    },
+    "Тема": {
+      "main": [[{ "node": "OpenRouter", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateId": "bigdataschool-openrouter-content-flow" }
+}
