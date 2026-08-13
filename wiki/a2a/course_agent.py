@@ -5,8 +5,6 @@
 JSON-RPC биндинг протокола A2A на /a2a/jsonrpc/.
 """
 
-import asyncio
-
 import uvicorn
 from ollama import AsyncClient
 from starlette.applications import Starlette
