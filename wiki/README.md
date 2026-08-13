@@ -8,3 +8,4 @@
 | [langgraph](langgraph/) | [LangGraph](https://bigdataschool.ru/wiki/langgraph/) |
 | [graphrag](graphrag/) | [GraphRAG](https://bigdataschool.ru/wiki/graphrag/) |
 | [llmops](llmops/) | [LLMOps](https://bigdataschool.ru/wiki/llmops/) |
+| [a2a](a2a/) | [A2A (Agent2Agent Protocol)](https://bigdataschool.ru/wiki/a2a/) |
