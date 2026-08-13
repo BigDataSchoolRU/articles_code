@@ -52,7 +52,7 @@ def supervisor(state: TeamState) -> TeamState:
         "Порядок работы: сначала researcher, потом analyst, потом critic, потом FINISH.",
     )
     choice = next((r for r in ("researcher", "analyst", "critic", "FINISH") if r.lower() in verdict.lower()), None)
-    # Предохранитель: модель на 7B миллиардов параметров иногда возвращает мусор
+    # Предохранитель: модель на 7 миллиардов параметров иногда возвращает мусор
     # или зацикливает роль, поэтому детерминированный порядок остаётся страховкой.
     fallback = "researcher" if not state.get("findings") else "analyst" if not state.get("analysis") else "critic" if not state.get("review") else "FINISH"
     if choice is None or (choice != "FINISH" and state.get({"researcher": "findings", "analyst": "analysis", "critic": "review"}[choice])):
@@ -66,7 +66,7 @@ def supervisor(state: TeamState) -> TeamState:
 
 def researcher(state: TeamState) -> TeamState:
     """Поисковик работает только с каталогом и не додумывает курсы от себя."""
-    catalog = "\n".join(f"{c['code']}: {c['title']} — {c['about']}" for c in CATALOG)
+    catalog = "\n".join(f"{c['code']}: {c['title']} - {c['about']}" for c in CATALOG)
     out = ask(
         "Ты поисковый агент. Выбери из каталога 1-2 подходящих курса. "
         "Отвечай строками вида КОД: причина. Курсы вне каталога называть запрещено.",
