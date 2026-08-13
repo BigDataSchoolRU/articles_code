@@ -9,3 +9,4 @@
 | [graphrag](graphrag/) | [GraphRAG](https://bigdataschool.ru/wiki/graphrag/) |
 | [llmops](llmops/) | [LLMOps](https://bigdataschool.ru/wiki/llmops/) |
 | [a2a](a2a/) | [A2A (Agent2Agent Protocol)](https://bigdataschool.ru/wiki/a2a/) |
+| [multi_agent_system](multi_agent_system/) | [Multi-Agent System (мультиагентная система)](https://bigdataschool.ru/wiki/multi_agent_system/) |
