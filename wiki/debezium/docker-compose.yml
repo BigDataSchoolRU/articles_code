@@ -1,0 +1,41 @@
+# стенд проверен на Debezium 3.6.1.Final, PostgreSQL 18 и Docker 29.4.2
+services:
+  postgres:
+    image: postgres:18
+    container_name: dbz_pg
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shopdb
+    # логическое декодирование включается параметрами запуска сервера
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_replication_slots=10
+      - -c
+      - max_wal_senders=10
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  server:
+    image: quay.io/debezium/server:3.6.1.Final
+    container_name: dbz_server
+    depends_on:
+      - postgres
+    volumes:
+      - ./config/application.properties:/debezium/config/application.properties:ro
+      - ./data:/debezium/data
+
+  # второй прогон: REPLICA IDENTITY FULL, decimal.handling.mode и SMT unwrap
+  server_full:
+    image: quay.io/debezium/server:3.6.1.Final
+    container_name: dbz_server_full
+    profiles: ["full"]
+    depends_on:
+      - postgres
+    volumes:
+      - ./config/application_full.properties:/debezium/config/application.properties:ro
+      - ./data:/debezium/data
