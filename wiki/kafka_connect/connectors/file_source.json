@@ -1,0 +1,11 @@
+{
+  "name": "orders-file-source",
+  "config": {
+    "connector.class": "org.apache.kafka.connect.file.FileStreamSourceConnector",
+    "tasks.max": "3",
+    "file": "/data/orders.txt",
+    "topic": "demo_orders",
+    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter"
+  }
+}

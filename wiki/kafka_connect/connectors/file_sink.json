@@ -1,0 +1,17 @@
+{
+  "name": "orders-file-sink",
+  "config": {
+    "connector.class": "org.apache.kafka.connect.file.FileStreamSinkConnector",
+    "tasks.max": "5",
+    "topics": "demo_orders",
+    "file": "/data/orders_out.txt",
+    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "transforms": "hoist,addSource",
+    "transforms.hoist.type": "org.apache.kafka.connect.transforms.HoistField$Value",
+    "transforms.hoist.field": "line",
+    "transforms.addSource.type": "org.apache.kafka.connect.transforms.InsertField$Value",
+    "transforms.addSource.static.field": "src",
+    "transforms.addSource.static.value": "kafka-connect-demo"
+  }
+}
