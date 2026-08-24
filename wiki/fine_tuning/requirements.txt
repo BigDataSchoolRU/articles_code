@@ -1,0 +1,8 @@
+# Версии зафиксированы по факту прогона на macOS 26.5.2 (Apple Silicon, MPS), 2026-08-24.
+# Python 3.12.13. CUDA не нужна, обучение идёт на MPS.
+torch==2.13.0
+transformers==5.15.1
+peft==0.20.0
+trl==1.10.0
+datasets==5.0.1
+accelerate==1.14.0
