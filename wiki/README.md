@@ -15,3 +15,4 @@
 | [multimodal_ai](multimodal_ai/) | [Мультимодальный ИИ (Multimodal AI)](https://bigdataschool.ru/wiki/multimodal_ai/) |
 | [chromadb](chromadb/) | [ChromaDB](https://bigdataschool.ru/wiki/chromadb/) |
 | [event_streaming](event_streaming/) | [Потоковая передача событий (Event Streaming)](https://bigdataschool.ru/wiki/event_streaming/) |
+| [htap](htap/) | [HTAP (Hybrid Transactional/Analytical Processing)](https://bigdataschool.ru/wiki/htap/) |
