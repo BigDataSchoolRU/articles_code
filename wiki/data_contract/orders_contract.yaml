@@ -1,0 +1,86 @@
+# ODCS 3.1.0, проверено datacontract-cli 1.1.1 против PostgreSQL 18.4, 2026-08-25
+apiVersion: v3.1.0
+kind: DataContract
+id: bds-orders-contract
+name: Orders
+version: 1.0.0
+status: active
+
+description:
+  purpose: Таблица заказов интернет-магазина, витрина для аналитики и биллинга.
+  usage: Читают отчёты по выручке и джоба начисления бонусов.
+  limitations: История хранится 90 дней, персональные данные покупателя тут не лежат.
+
+tags:
+  - orders
+  - demo
+
+team:
+  - username: data-platform
+    role: owner
+  - username: analytics
+    role: consumer
+
+servers:
+  - server: local
+    type: postgres
+    host: localhost
+    port: 5432
+    database: contract_demo
+    schema: public
+
+schema:
+  - name: orders
+    physicalName: orders
+    logicalType: object
+    physicalType: table
+    description: Один заказ на строку.
+    properties:
+      - name: id
+        logicalType: integer
+        physicalType: bigint
+        primaryKey: true
+        required: true
+        description: Идентификатор заказа.
+      - name: customer_id
+        logicalType: integer
+        physicalType: integer
+        required: true
+        description: Идентификатор покупателя.
+      - name: order_amount
+        logicalType: number
+        physicalType: numeric
+        required: true
+        description: Сумма заказа в рублях.
+        quality:
+          - metric: nullValues
+            mustBe: 0
+            description: Сумма заказа обязана быть заполнена.
+      - name: status
+        logicalType: string
+        physicalType: text
+        required: true
+        description: Статус заказа.
+        quality:
+          - metric: invalidValues
+            mustBe: 0
+            arguments:
+              validValues: [new, paid, shipped, cancelled]
+            description: Статус берётся только из согласованного списка.
+      - name: created_at
+        logicalType: date
+        physicalType: timestamp with time zone
+        required: true
+        description: Момент создания заказа.
+    quality:
+      - metric: rowCount
+        mustBeGreaterThan: 0
+        description: Витрина не должна приезжать пустой.
+
+slaProperties:
+  - property: frequency
+    value: 1
+    unit: d
+  - property: latency
+    value: 6
+    unit: h
