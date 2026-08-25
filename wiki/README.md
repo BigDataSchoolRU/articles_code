@@ -17,3 +17,4 @@
 | [event_streaming](event_streaming/) | [Потоковая передача событий (Event Streaming)](https://bigdataschool.ru/wiki/event_streaming/) |
 | [htap](htap/) | [HTAP (Hybrid Transactional/Analytical Processing)](https://bigdataschool.ru/wiki/htap/) |
 | [fine_tuning](fine_tuning/) | [Дообучение модели (Fine-tuning)](https://bigdataschool.ru/wiki/fine_tuning/) |
+| [context_window](context_window/) | [Контекстное окно (Context Window)](https://bigdataschool.ru/wiki/context_window/) |
