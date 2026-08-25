@@ -19,3 +19,4 @@
 | [fine_tuning](fine_tuning/) | [Дообучение модели (Fine-tuning)](https://bigdataschool.ru/wiki/fine_tuning/) |
 | [context_window](context_window/) | [Контекстное окно (Context Window)](https://bigdataschool.ru/wiki/context_window/) |
 | [data_observability](data_observability/) | [Наблюдаемость данных (Data Observability)](https://bigdataschool.ru/wiki/data_observability/) |
+| [ai_orchestration](ai_orchestration/) | [Оркестрация ИИ (AI Orchestration)](https://bigdataschool.ru/wiki/ai_orchestration/) |
