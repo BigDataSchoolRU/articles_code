@@ -1,0 +1,21 @@
+# soda-core 3.5.6, синтаксис SodaCL, прогнано на стенде 2026-08-25
+# Четыре из пяти столпов наблюдаемости, выраженные декларативными правилами.
+checks for orders:
+  # Свежесть: последняя запись не старше часа
+  - freshness(created_at) < 1h
+
+  # Объём: жёсткий порог, ниже которого витрина считается пустой
+  - row_count > 100
+
+  # Схема: обязательные колонки и тип суммы
+  - schema:
+      name: состав колонок витрины заказов
+      fail:
+        when required column missing: [id, customer_id, amount, status, created_at]
+        when wrong column type:
+          amount: numeric
+
+  # Распределение: пропуски и словарь допустимых статусов
+  - missing_count(customer_id) = 0
+  - invalid_count(status) = 0:
+      valid values: [paid, refunded, cancelled]

@@ -1,0 +1,9 @@
+# soda-core 3.5.6, PostgreSQL 18.4, прогнано на стенде 2026-08-25
+# Подключение к источнику. Хост, порт и пользователя подставьте свои.
+data_source orders_demo:
+  type: postgres
+  host: localhost
+  port: 5432
+  username: techfriends
+  database: observability_demo
+  schema: public
