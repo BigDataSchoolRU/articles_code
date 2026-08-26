@@ -3,7 +3,7 @@ version: 2
 
 semantic_models:
   - name: orders
-    description: "Заказы интернет-магазина: одна строка — один заказ."
+    description: "Заказы интернет-магазина, одна строка это один заказ."
     model: ref('stg_orders')
     defaults:
       agg_time_dimension: order_date
