@@ -1,0 +1,28 @@
+# MetricFlow 0.212.0 (dbt-metricflow 0.14.0), синтаксис по документации dbt Semantic Layer, прогнано на стенде 2026-08-26
+version: 2
+
+metrics:
+  - name: total_revenue
+    description: "Суммарная выручка по заказам."
+    type: simple
+    type_params:
+      measure: order_amount
+
+  - name: order_count
+    description: "Количество заказов."
+    type: simple
+    type_params:
+      measure: order_count
+
+  - name: completed_orders
+    description: "Количество завершённых заказов."
+    type: simple
+    type_params:
+      measure: completed_order_count
+
+  - name: completion_rate
+    description: "Доля завершённых заказов от общего числа."
+    type: ratio
+    type_params:
+      numerator: completed_orders
+      denominator: order_count

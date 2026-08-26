@@ -5,6 +5,7 @@
 
 | Папка | Статья |
 |---|---|
+| [semantic_layer](semantic_layer/) | [Semantic layer](https://bigdataschool.ru/wiki/semantic_layer/) |
 | [langgraph](langgraph/) | [LangGraph](https://bigdataschool.ru/wiki/langgraph/) |
 | [graphrag](graphrag/) | [GraphRAG](https://bigdataschool.ru/wiki/graphrag/) |
 | [llmops](llmops/) | [LLMOps](https://bigdataschool.ru/wiki/llmops/) |

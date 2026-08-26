@@ -1,0 +1,33 @@
+# MetricFlow 0.212.0 (dbt-metricflow 0.14.0), синтаксис по документации dbt Semantic Layer, прогнано на стенде 2026-08-26
+version: 2
+
+semantic_models:
+  - name: orders
+    description: "Заказы интернет-магазина: одна строка — один заказ."
+    model: ref('stg_orders')
+    defaults:
+      agg_time_dimension: order_date
+    entities:
+      - name: order_id
+        type: primary
+      - name: customer_id
+        type: foreign
+    dimensions:
+      - name: order_date
+        type: time
+        type_params:
+          time_granularity: day
+      - name: region
+        type: categorical
+      - name: status
+        type: categorical
+    measures:
+      - name: order_amount
+        agg: sum
+        expr: amount
+      - name: order_count
+        agg: count
+        expr: order_id
+      - name: completed_order_count
+        agg: sum
+        expr: "case when is_completed then 1 else 0 end"

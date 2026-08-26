@@ -1,0 +1,13 @@
+# dbt-core 1.12.3, прогнано на стенде 2026-08-26
+name: 'semantic_layer_demo'
+version: '1.0.0'
+config-version: 2
+
+profile: 'semantic_layer_demo'
+
+model-paths: ["models"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  semantic_layer_demo:
+    +materialized: view

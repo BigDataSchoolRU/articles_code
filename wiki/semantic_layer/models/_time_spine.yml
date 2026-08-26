@@ -1,0 +1,10 @@
+# dbt-core 1.12.3, синтаксис по документации dbt Semantic Layer, прогнано на стенде 2026-08-26
+version: 2
+
+models:
+  - name: metricflow_time_spine
+    time_spine:
+      standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        granularity: day
