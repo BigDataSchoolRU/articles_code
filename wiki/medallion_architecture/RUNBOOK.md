@@ -7,8 +7,8 @@ Gold. Никакой внешней инфраструктуры не требу
 ## Окружение
 
 - Python 3.12+
-- `duckdb` 1.5.5 (поддержка `MERGE INTO` — с этой версии; на более старых DuckDB синтаксис не
-  распознаётся)
+- `duckdb` 1.5.5. Оператор `MERGE INTO` доступен начиная с DuckDB 1.4.0 LTS, версия 1.5.5
+  зафиксирована по стенду, на котором прогонялось демо
 
 Установка:
 
@@ -83,8 +83,8 @@ order_date    category  revenue  orders_count
 
 ## Если не так
 
-- **`Catalog Error: MERGE INTO`** или синтаксическая ошибка на `MERGE` — версия DuckDB старше
-  1.5.5, обновите пакет: `pip install -U duckdb`.
+- **`Catalog Error: MERGE INTO`** или синтаксическая ошибка на `MERGE` - версия DuckDB старше
+  1.4.0, обновите пакет: `pip install -U duckdb`.
 - **Silver строк больше 2 после первого прогона** — дедуп по `row_number() OVER (PARTITION BY
   order_id ORDER BY ingested_at DESC)` не сработал, скорее всего два прогона попали в один и тот
   же `ingested_at` (разрешение таймстампа): добавьте `sleep 1` между вызовами `ingest_bronze`,
