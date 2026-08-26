@@ -24,3 +24,4 @@
 | [ai_orchestration](ai_orchestration/) | [Оркестрация ИИ (AI Orchestration)](https://bigdataschool.ru/wiki/ai_orchestration/) |
 | [data_contract](data_contract/) | [Контракт данных (Data Contract)](https://bigdataschool.ru/wiki/data_contract/) |
 | [medallion_architecture](medallion_architecture/) | [Медальонная архитектура (Medallion Architecture)](https://bigdataschool.ru/wiki/medallion_architecture/) |
+| [llamaindex](llamaindex/) | [LlamaIndex](https://bigdataschool.ru/wiki/llamaindex/) |
