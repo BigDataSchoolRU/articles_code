@@ -39,8 +39,9 @@ python3 demo.py
 Baseline по эмбеддингам ставит документ с точным ответом на вопрос (`kafka_exactly_once`) только
 на 4-е место из 5 — выше него косинусное сходство поднимает документы, которые просто упоминают
 Kafka в общем контексте (`kafka_consumer_group`, `kafka_connect`, `kafka_overview`). После
-reranking cross-encoder'ом `kafka_exactly_once` поднимается на 1-е место, а остальные четыре
-сохраняют относительный порядок.
+reranking cross-encoder'ом `kafka_exactly_once` поднимается на 1-е место, а у остальных четырёх
+`kafka_connect` и `kafka_overview` меняются местами между собой, `kafka_consumer_group` и
+`hdfs_replication` остаются на своих местах.
 
 Скор cross-encoder'а — сырой логит модели MS MARCO, не нормализован в 0-1: важен порядок значений,
 а не сама величина.
