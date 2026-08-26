@@ -48,8 +48,8 @@ def main() -> None:
     rows = []
     for tag in TAGS:
         size_mb = model_size_mb(tag)
-        cold = timed_call(tag)  # первый вызов после переключения модели — со загрузкой весов
-        warm = timed_call(tag)  # второй вызов сразу следом — веса уже в памяти
+        cold = timed_call(tag)  # первый вызов после переключения модели, с загрузкой весов
+        warm = timed_call(tag)  # второй вызов сразу следом, веса уже в памяти
         rows.append((tag, size_mb, cold, warm))
 
         print(f"=== {tag} ===")
