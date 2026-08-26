@@ -1,6 +1,6 @@
 # ollama 0.6.2, модель nomic-embed-text (768 измерений), прогнано на стенде 2026-08-26
 # nomic-embed-text асимметричная: без префиксов задачи cosine similarity считается
-# некорректно (см. грабли в 02. Wiki/stand.md) — префиксы обязательны
+# некорректно (см. грабли в 02. Wiki/stand.md), префиксы обязательны
 
 import ollama
 
@@ -24,7 +24,7 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
 
 def baseline_retrieve(query: str, documents: list[tuple[str, str]], top_n: int):
     """Возвращает top_n документов по косинусному сходству эмбеддингов, отсортированных
-    по убыванию сходства. documents — список (id, текст)."""
+    по убыванию сходства. documents, список (id, текст)."""
     query_vec = embed_query(query)
     scored = []
     for doc_id, text in documents:

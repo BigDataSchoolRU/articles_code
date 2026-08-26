@@ -16,10 +16,10 @@ def _get_model() -> CrossEncoder:
 
 def rerank(query: str, candidates: list[tuple[str, str, float]]):
     """Пересчитывает релевантность пар (запрос, документ) для кандидатов, отобранных
-    baseline-поиском. candidates — список (id, текст, baseline_score).
+    baseline-поиском. candidates, список (id, текст, baseline_score).
     Возвращает список (id, текст, cross_encoder_score), отсортированный по убыванию
-    cross_encoder_score. Скор — сырой логит модели MS MARCO, не нормализован в 0-1:
-    порядок значений важен, само число — нет."""
+    cross_encoder_score. Скор это сырой логит модели MS MARCO, не нормализован в 0-1,
+    важен порядок значений, а не само число."""
     model = _get_model()
     pairs = [(query, text) for _, text, _ in candidates]
     scores = model.predict(pairs)
