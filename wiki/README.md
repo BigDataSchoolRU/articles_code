@@ -31,3 +31,4 @@
 | [stream_processing](stream_processing/) | [Потоковая обработка данных (Stream Processing)](https://bigdataschool.ru/wiki/stream_processing/) |
 | [prompt_caching](prompt_caching/) | [Prompt Caching (Кэширование промптов)](https://bigdataschool.ru/wiki/prompt_caching/) |
 | [openmetadata](openmetadata/) | [OpenMetadata](https://bigdataschool.ru/wiki/openmetadata/) |
+| [react](react/) | [ReAct](https://bigdataschool.ru/wiki/react/) |
