@@ -30,3 +30,4 @@
 | [llm_as_a_judge](llm_as_a_judge/) | [LLM-as-a-Judge](https://bigdataschool.ru/wiki/llm_as_a_judge/) |
 | [stream_processing](stream_processing/) | [Потоковая обработка данных (Stream Processing)](https://bigdataschool.ru/wiki/stream_processing/) |
 | [prompt_caching](prompt_caching/) | [Prompt Caching (Кэширование промптов)](https://bigdataschool.ru/wiki/prompt_caching/) |
+| [openmetadata](openmetadata/) | [OpenMetadata](https://bigdataschool.ru/wiki/openmetadata/) |
