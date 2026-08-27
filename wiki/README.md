@@ -27,3 +27,4 @@
 | [medallion_architecture](medallion_architecture/) | [Медальонная архитектура (Medallion Architecture)](https://bigdataschool.ru/wiki/medallion_architecture/) |
 | [llamaindex](llamaindex/) | [LlamaIndex](https://bigdataschool.ru/wiki/llamaindex/) |
 | [reranking](reranking/) | [Reranking](https://bigdataschool.ru/wiki/reranking/) |
+| [llm_as_a_judge](llm_as_a_judge/) | [LLM-as-a-Judge](https://bigdataschool.ru/wiki/llm_as_a_judge/) |
