@@ -28,3 +28,4 @@
 | [llamaindex](llamaindex/) | [LlamaIndex](https://bigdataschool.ru/wiki/llamaindex/) |
 | [reranking](reranking/) | [Reranking](https://bigdataschool.ru/wiki/reranking/) |
 | [llm_as_a_judge](llm_as_a_judge/) | [LLM-as-a-Judge](https://bigdataschool.ru/wiki/llm_as_a_judge/) |
+| [stream_processing](stream_processing/) | [Потоковая обработка данных (Stream Processing)](https://bigdataschool.ru/wiki/stream_processing/) |
