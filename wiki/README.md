@@ -33,3 +33,4 @@
 | [openmetadata](openmetadata/) | [OpenMetadata](https://bigdataschool.ru/wiki/openmetadata/) |
 | [react](react/) | [ReAct](https://bigdataschool.ru/wiki/react/) |
 | [hybrid_search](hybrid_search/) | [Hybrid Search (гибридный поиск)](https://bigdataschool.ru/wiki/hybrid_search/) |
+| [dbt](dbt/) | [dbt (data build tool)](https://bigdataschool.ru/wiki/dbt/) |

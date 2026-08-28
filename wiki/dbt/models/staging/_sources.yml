@@ -1,0 +1,8 @@
+# dbt-core 1.12.3, прогнано на стенде 2026-08-28
+version: 2
+
+sources:
+  - name: raw
+    schema: public
+    tables:
+      - name: orders

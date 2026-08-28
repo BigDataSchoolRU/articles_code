@@ -1,0 +1,13 @@
+# dbt-postgres 1.11.0, локальный PostgreSQL 18.4 (Homebrew, доверительная аутентификация), прогнано на стенде 2026-08-28
+dbt_demo:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      user: techfriends
+      password: ""
+      port: 5432
+      dbname: semantic_layer_demo
+      schema: public
+      threads: 4
