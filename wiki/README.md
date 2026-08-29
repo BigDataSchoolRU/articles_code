@@ -34,3 +34,4 @@
 | [react](react/) | [ReAct](https://bigdataschool.ru/wiki/react/) |
 | [hybrid_search](hybrid_search/) | [Hybrid Search (гибридный поиск)](https://bigdataschool.ru/wiki/hybrid_search/) |
 | [dbt](dbt/) | [dbt (data build tool)](https://bigdataschool.ru/wiki/dbt/) |
+| [etl](etl/) | [ETL (Extract, Transform, Load)](https://bigdataschool.ru/wiki/etl/) |
