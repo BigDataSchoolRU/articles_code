@@ -1,10 +1,10 @@
 # pandas 3.0.5, psycopg 3.3.4, PostgreSQL 18.4, прогнано на стенде 2026-08-29
 """Простой ETL-конвейер: Extract из raw_orders, Transform в pandas, Load в
-sales_summary — обе таблицы в одной базе etl_demo, поднятой db_setup.py.
+sales_summary, обе таблицы в одной базе etl_demo, поднятой db_setup.py.
 
 Ключевой момент архитектуры виден прямо в коде: между extract() и load()
 данные целиком проходят через процесс pandas, а не через SQL внутри базы.
-Это и есть staging area классического ETL — трансформация происходит до
+Это и есть staging area классического ETL, трансформация происходит до
 загрузки, вне хранилища. В ELT то же самое сделал бы SQL-запрос уже после
 загрузки сырых данных в целевую таблицу.
 """
@@ -29,7 +29,7 @@ CREATE TABLE sales_summary (
 
 
 def extract(conn: psycopg.Connection) -> pd.DataFrame:
-    """Extract: полная выгрузка исходной таблицы, без фильтров на стороне источника —
+    """Extract: полная выгрузка исходной таблицы, без фильтров на стороне источника,
     вся логика отбора и очистки идёт дальше, в transform."""
     with conn.cursor() as cur:
         cur.execute(
@@ -42,7 +42,7 @@ def extract(conn: psycopg.Connection) -> pd.DataFrame:
 
 
 def transform(df: pd.DataFrame) -> pd.DataFrame:
-    """Transform: базовая очистка, производный расчёт и агрегация — три вида
+    """Transform: базовая очистка, производный расчёт и агрегация, три вида
     трансформации из плана статьи, все на одном датафрейме."""
     extracted = len(df)
 
@@ -71,7 +71,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load(conn: psycopg.Connection, df: pd.DataFrame) -> None:
-    """Load: full load — целевая таблица каждый раз очищается и наполняется
+    """Load: full load, целевая таблица каждый раз очищается и наполняется
     заново целиком, без сравнения с предыдущим состоянием."""
     records = [
         (row.region, row.order_date, int(row.order_count), round(float(row.total_revenue), 2))
