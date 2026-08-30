@@ -40,3 +40,4 @@
 | [ollama](ollama/) | [Ollama](https://bigdataschool.ru/wiki/ollama/) |
 | [llm_evaluation](llm_evaluation/) | [LLM Evaluation (оценка качества LLM)](https://bigdataschool.ru/wiki/llm_evaluation/) |
 | [lora](lora/) | [LoRA (Low-Rank Adaptation)](https://bigdataschool.ru/wiki/lora/) |
+| [pgvector](pgvector/) | [pgvector](https://bigdataschool.ru/wiki/pgvector/) |
