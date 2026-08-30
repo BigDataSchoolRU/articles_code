@@ -7,12 +7,13 @@
 """
 
 import random
-import subprocess
 from datetime import date, timedelta
 
 import psycopg
 
 DB_NAME = "data_quality_demo"
+ADMIN_DSN = "dbname=postgres user=techfriends host=localhost"
+DEMO_DSN = f"dbname={DB_NAME} user=techfriends host=localhost"
 TOTAL_ROWS = 5000
 DUPLICATE_IDS = 30
 NULL_EMAIL_ROWS = 26
@@ -29,12 +30,14 @@ STATUS_VARIANTS = {
 }
 
 
-def recreate_database() -> None:
-    # пересоздание через psql, а не DROP/CREATE DATABASE внутри psycopg-транзакции:
-    # Postgres не разрешает DROP DATABASE, пока к ней есть открытые подключения
-    env_path = "/opt/homebrew/opt/postgresql@18/bin"
-    subprocess.run([f"{env_path}/dropdb", "--if-exists", DB_NAME], check=True)
-    subprocess.run([f"{env_path}/createdb", DB_NAME], check=True)
+def ensure_database() -> None:
+    # CREATE DATABASE не идёт внутри транзакции, поэтому подключение в autocommit
+    with psycopg.connect(ADMIN_DSN, autocommit=True) as conn:
+        exists = conn.execute(
+            "select 1 from pg_database where datname = %s", (DB_NAME,)
+        ).fetchone()
+        if not exists:
+            conn.execute(f"create database {DB_NAME}")
 
 
 def build_rows() -> list[tuple]:
@@ -85,9 +88,9 @@ def build_rows() -> list[tuple]:
 
 
 def load_rows(rows: list[tuple]) -> None:
-    conn_str = f"dbname={DB_NAME} user=techfriends host=localhost"
-    with psycopg.connect(conn_str) as conn:
+    with psycopg.connect(DEMO_DSN) as conn:
         with conn.cursor() as cur:
+            cur.execute("drop table if exists orders")
             cur.execute(
                 """
                 create table orders (
@@ -108,7 +111,7 @@ def load_rows(rows: list[tuple]) -> None:
 
 
 if __name__ == "__main__":
-    recreate_database()
+    ensure_database()
     demo_rows = build_rows()
     load_rows(demo_rows)
     print(f"orders: {len(demo_rows)} строк загружено в базу {DB_NAME}")
