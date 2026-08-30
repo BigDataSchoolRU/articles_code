@@ -5,6 +5,7 @@
 
 | Папка | Статья |
 |---|---|
+| [milvus](milvus/) | [Milvus](https://bigdataschool.ru/wiki/milvus/) |
 | [quantization](quantization/) | [Quantization](https://bigdataschool.ru/wiki/quantization/) |
 | [semantic_search](semantic_search/) | [Semantic search](https://bigdataschool.ru/wiki/semantic_search/) |
 | [semantic_layer](semantic_layer/) | [Semantic layer](https://bigdataschool.ru/wiki/semantic_layer/) |
