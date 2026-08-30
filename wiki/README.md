@@ -5,6 +5,7 @@
 
 | Папка | Статья |
 |---|---|
+| [real_time_analytics](real_time_analytics/) | [Аналитика в реальном времени (Real-Time Analytics)](https://bigdataschool.ru/wiki/real_time_analytics/) |
 | [milvus](milvus/) | [Milvus](https://bigdataschool.ru/wiki/milvus/) |
 | [quantization](quantization/) | [Quantization](https://bigdataschool.ru/wiki/quantization/) |
 | [semantic_search](semantic_search/) | [Semantic search](https://bigdataschool.ru/wiki/semantic_search/) |
