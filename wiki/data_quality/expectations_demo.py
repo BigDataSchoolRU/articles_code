@@ -47,7 +47,7 @@ suite.add_expectation(ExpectColumnValuesToNotBeNull(column="amount"))
 # уникальность (uniqueness): order_id — первичный ключ заказа
 suite.add_expectation(ExpectColumnValuesToBeUnique(column="order_id"))
 
-# достоверность (validity): формат email и допустимый диапазон суммы
+# валидность (validity): формат email и допустимый диапазон суммы
 suite.add_expectation(
     ExpectColumnValuesToMatchRegex(column="customer_email", regex=EMAIL_REGEX, mostly=1.0)
 )
