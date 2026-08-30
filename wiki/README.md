@@ -41,3 +41,4 @@
 | [llm_evaluation](llm_evaluation/) | [LLM Evaluation (оценка качества LLM)](https://bigdataschool.ru/wiki/llm_evaluation/) |
 | [lora](lora/) | [LoRA (Low-Rank Adaptation)](https://bigdataschool.ru/wiki/lora/) |
 | [pgvector](pgvector/) | [pgvector](https://bigdataschool.ru/wiki/pgvector/) |
+| [data_quality](data_quality/) | [Качество данных (Data Quality)](https://bigdataschool.ru/wiki/data_quality/) |
