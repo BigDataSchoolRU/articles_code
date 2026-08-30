@@ -63,12 +63,12 @@ def build_rows() -> list[tuple]:
     for i in random.sample(range(TOTAL_ROWS), NULL_AMOUNT_ROWS):
         rows[i][2] = None
 
-    # достоверность (validity): сумма вне допустимого диапазона
+    # валидность (validity): сумма вне допустимого диапазона
     for i in random.sample(range(TOTAL_ROWS), NEGATIVE_AMOUNT_ROWS):
         if rows[i][2] is not None:
             rows[i][2] = -abs(rows[i][2])
 
-    # достоверность (validity): email не проходит формат адреса
+    # валидность (validity): email не проходит формат адреса
     for i in random.sample(range(TOTAL_ROWS), BAD_EMAIL_ROWS):
         if rows[i][1] is not None:
             rows[i][1] = "not-an-email"
