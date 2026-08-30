@@ -36,3 +36,4 @@
 | [dbt](dbt/) | [dbt (data build tool)](https://bigdataschool.ru/wiki/dbt/) |
 | [etl](etl/) | [ETL (Extract, Transform, Load)](https://bigdataschool.ru/wiki/etl/) |
 | [elt](elt/) | [ELT (Extract, Load, Transform)](https://bigdataschool.ru/wiki/elt/) |
+| [ollama](ollama/) | [Ollama](https://bigdataschool.ru/wiki/ollama/) |
