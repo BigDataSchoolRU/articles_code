@@ -35,3 +35,4 @@
 | [hybrid_search](hybrid_search/) | [Hybrid Search (гибридный поиск)](https://bigdataschool.ru/wiki/hybrid_search/) |
 | [dbt](dbt/) | [dbt (data build tool)](https://bigdataschool.ru/wiki/dbt/) |
 | [etl](etl/) | [ETL (Extract, Transform, Load)](https://bigdataschool.ru/wiki/etl/) |
+| [elt](elt/) | [ELT (Extract, Load, Transform)](https://bigdataschool.ru/wiki/elt/) |
