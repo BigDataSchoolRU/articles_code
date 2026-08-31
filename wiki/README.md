@@ -45,3 +45,4 @@
 | [pgvector](pgvector/) | [pgvector](https://bigdataschool.ru/wiki/pgvector/) |
 | [data_quality](data_quality/) | [Качество данных (Data Quality)](https://bigdataschool.ru/wiki/data_quality/) |
 | [exactly_once_semantics](exactly_once_semantics/) | [Семантика Exactly-Once (Exactly-Once Semantics)](https://bigdataschool.ru/wiki/exactly_once_semantics/) |
+| [sparse_mixture_of_experts](sparse_mixture_of_experts/) | [Sparse Mixture-of-Experts](https://bigdataschool.ru/wiki/sparse_mixture_of_experts/) |
