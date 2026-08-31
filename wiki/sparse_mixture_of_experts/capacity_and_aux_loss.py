@@ -5,7 +5,7 @@ Capacity factor, token dropping и auxiliary loss в Sparse MoE. Capacity зад
 num_experts). Токены сверх лимита эксперт не обслуживает (token dropping,
 GShard, arXiv:2006.16668) — в демо у них просто нет вклада эксперта, как если
 бы MoE-подслой для них вернул ноль и residual-связь пронесла их дальше без
-изменений. Auxiliary loss (Switch Transformer, arXiv:2101.03961, формула 4:
+изменений. Auxiliary loss (Switch Transformer, arXiv:2101.03961:
 loss = alpha * N * sum(f_i * P_i)) штрафует роутер за неравномерность:
 f_i — доля токенов, реально отправленных на эксперта i, P_i — средняя
 вероятность роутера по эксперту i. Демо сравнивает сбалансированный роутер со
