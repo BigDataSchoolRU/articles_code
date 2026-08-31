@@ -91,3 +91,6 @@ auxiliary loss (alpha=0.01): 0.019086
   батче или при большом `capacity_factor` лимит на эксперта может оказаться
   достаточным для всех токенов; это не ошибка, увеличьте `NUM_TOKENS` в
   скрипте или уменьшите `capacity_factor`, чтобы увидеть дропы явно.
+- **`UserWarning: Failed to initialize NumPy: No module named 'numpy'`** —
+  безобидное предупреждение torch в окружении без NumPy, на результат не
+  влияет; `pip install numpy` его уберёт, но для этого демо не обязательно.
