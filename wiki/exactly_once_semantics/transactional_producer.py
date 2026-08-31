@@ -1,4 +1,4 @@
-# confluent-kafka 2.15.0, Apache Kafka 4.3.0 в KRaft (стенд event_streaming), прогнано на стенде 2026-08-31
+# confluent-kafka 2.15.0, Apache Kafka 4.3.0 в KRaft (стенд exactly_once_semantics_kafka), прогнано на стенде 2026-08-31
 """Транзакционный producer: атомарная запись в несколько партиций, consumer с read_committed
 не видит записи из отменённой транзакции — то, что в логе видно, зависит от isolation.level."""
 from confluent_kafka import Consumer, Producer, TopicPartition
