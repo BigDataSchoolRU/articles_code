@@ -44,3 +44,4 @@
 | [lora](lora/) | [LoRA (Low-Rank Adaptation)](https://bigdataschool.ru/wiki/lora/) |
 | [pgvector](pgvector/) | [pgvector](https://bigdataschool.ru/wiki/pgvector/) |
 | [data_quality](data_quality/) | [Качество данных (Data Quality)](https://bigdataschool.ru/wiki/data_quality/) |
+| [exactly_once_semantics](exactly_once_semantics/) | [Семантика Exactly-Once (Exactly-Once Semantics)](https://bigdataschool.ru/wiki/exactly_once_semantics/) |
