@@ -48,3 +48,4 @@
 | [sparse_mixture_of_experts](sparse_mixture_of_experts/) | [Sparse Mixture-of-Experts](https://bigdataschool.ru/wiki/sparse_mixture_of_experts/) |
 | [leveldb](leveldb/) | [LevelDB](https://bigdataschool.ru/wiki/leveldb/) |
 | [peerdb](peerdb/) | [PeerDB](https://bigdataschool.ru/wiki/peerdb/) |
+| [pg_clickhouse](pg_clickhouse/) | [pg_clickhouse](https://bigdataschool.ru/wiki/pg_clickhouse/) |

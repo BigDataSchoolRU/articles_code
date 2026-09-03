@@ -1,0 +1,40 @@
+# pg_clickhouse v0.3.x (образ ghcr.io/clickhouse/pg_clickhouse:18, реально PostgreSQL 18.4),
+# ClickHouse 25.8 (образ clickhouse/clickhouse-server:25.8, реально 25.8.33.6),
+# прогнано на стенде 2026-09-03
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.8
+    container_name: pg_clickhouse_ch
+    environment:
+      # без явного пароля образ запрещает сетевой доступ пользователю default
+      # (пускает только localhost) — foreign server из другого контейнера
+      # получает "Authentication failed" вместо внятной причины
+      CLICKHOUSE_PASSWORD: demo_pass
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  postgres:
+    image: ghcr.io/clickhouse/pg_clickhouse:18
+    container_name: pg_clickhouse_pg
+    environment:
+      POSTGRES_PASSWORD: demo_pass
+    ports:
+      - "5432:5432"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
