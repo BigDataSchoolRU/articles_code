@@ -47,3 +47,4 @@
 | [exactly_once_semantics](exactly_once_semantics/) | [Семантика Exactly-Once (Exactly-Once Semantics)](https://bigdataschool.ru/wiki/exactly_once_semantics/) |
 | [sparse_mixture_of_experts](sparse_mixture_of_experts/) | [Sparse Mixture-of-Experts](https://bigdataschool.ru/wiki/sparse_mixture_of_experts/) |
 | [leveldb](leveldb/) | [LevelDB](https://bigdataschool.ru/wiki/leveldb/) |
+| [peerdb](peerdb/) | [PeerDB](https://bigdataschool.ru/wiki/peerdb/) |

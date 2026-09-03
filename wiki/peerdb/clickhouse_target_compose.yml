@@ -1,0 +1,33 @@
+# clickhouse/clickhouse-server 26.3, Docker Compose v5.3.1, прогнано на стенде 2026-09-03
+#
+# Официальный self-hosted docker-compose PeerDB (docs.peerdb.io/quickstart) поднимает Nexus,
+# Flow API/Worker, Temporal, MinIO и Postgres-каталог, но не ClickHouse — он не входит
+# в quickstart-стек. Этот файл добавляет отдельный ClickHouse в ту же сеть peerdb_network,
+# которую создаёт основной docker-compose.yml PeerDB.
+name: peerdb-quickstart-ch
+
+services:
+  clickhouse-target:
+    container_name: peerdb-clickhouse-target
+    image: clickhouse/clickhouse-server:26.3
+    restart: unless-stopped
+    ports:
+      - 8124:8123 # HTTP-интерфейс, им проверяем результат через curl
+      - 9010:9000 # нативный протокол, его использует коннектор PeerDB
+    environment:
+      CLICKHOUSE_USER: peerdb
+      CLICKHOUSE_PASSWORD: peerdb_demo_pass
+      CLICKHOUSE_DB: peerdb_target
+    volumes:
+      - ./clickhouse_data:/var/lib/clickhouse
+    extra_hosts:
+      # без этой строки ClickHouse не резолвит host.docker.internal и падает с DNS_ERROR
+      # в момент, когда PeerDB выгружает начальный снапшот через MinIO-стейджинг на хосте
+      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+
+networks:
+  default:
+    name: peerdb_network
+    external: true
