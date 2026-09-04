@@ -50,3 +50,4 @@
 | [peerdb](peerdb/) | [PeerDB](https://bigdataschool.ru/wiki/peerdb/) |
 | [pg_clickhouse](pg_clickhouse/) | [pg_clickhouse](https://bigdataschool.ru/wiki/pg_clickhouse/) |
 | [hallucination_detection](hallucination_detection/) | [Hallucination Detection](https://bigdataschool.ru/wiki/hallucination_detection/) |
+| [checkpointing](checkpointing/) | [Checkpointing (Чекпоинтинг)](https://bigdataschool.ru/wiki/checkpointing/) |
