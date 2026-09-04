@@ -6,7 +6,7 @@ ClickHouse синтетическими данными и показывает, 
 
 ## Окружение
 
-- Docker и Docker Compose (проверено на Docker Desktop, Compose v2/v3).
+- Docker и Docker Compose (проверено на Docker Desktop, Compose v5.3.1).
 - Файлы этой папки: `docker-compose.yml`, `clickhouse_setup.sql`,
   `foreign_setup.sql`, `pushdown_demo.sql`.
 - Все команды ниже выполняются из этой папки.

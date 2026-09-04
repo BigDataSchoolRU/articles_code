@@ -21,7 +21,7 @@ Docker-стенд с PostgreSQL (расширение pg_clickhouse) и ClickHou
 ## Окружение
 
 Docker, Docker Compose. Проверено на Docker Desktop (macOS, arm64),
-Compose v2/v3.
+Compose v5.3.1.
 
 ## Как запустить
 
