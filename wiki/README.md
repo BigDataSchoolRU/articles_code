@@ -55,3 +55,4 @@
 | [durable_execution](durable_execution/) | [Durable Execution](https://bigdataschool.ru/wiki/durable_execution/) |
 | [lsm_tree](lsm_tree/) | [LSM-Tree (LSM-дерево)](https://bigdataschool.ru/wiki/lsm_tree/) |
 | [lambda_architecture](lambda_architecture/) | [Lambda Architecture](https://bigdataschool.ru/wiki/lambda_architecture/) |
+| [watermark](watermark/) | [Watermark в потоковой обработке данных](https://bigdataschool.ru/wiki/watermark/) |
