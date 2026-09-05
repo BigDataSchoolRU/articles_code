@@ -52,3 +52,4 @@
 | [hallucination_detection](hallucination_detection/) | [Hallucination Detection](https://bigdataschool.ru/wiki/hallucination_detection/) |
 | [checkpointing](checkpointing/) | [Checkpointing (Чекпоинтинг)](https://bigdataschool.ru/wiki/checkpointing/) |
 | [durable_execution](durable_execution/) | [Durable Execution](https://bigdataschool.ru/wiki/durable_execution/) |
+| [lsm_tree](lsm_tree/) | [LSM-Tree (LSM-дерево)](https://bigdataschool.ru/wiki/lsm_tree/) |
