@@ -5,6 +5,7 @@
 
 | Папка | Статья |
 |---|---|
+| [schema_evolution](schema_evolution/) | [Schema Evolution](https://bigdataschool.ru/wiki/schema_evolution/) |
 | [olap](olap/) | [OLAP (Online Analytical Processing)](https://bigdataschool.ru/wiki/olap/) |
 | [real_time_analytics](real_time_analytics/) | [Аналитика в реальном времени (Real-Time Analytics)](https://bigdataschool.ru/wiki/real_time_analytics/) |
 | [milvus](milvus/) | [Milvus](https://bigdataschool.ru/wiki/milvus/) |
