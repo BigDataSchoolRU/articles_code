@@ -10,7 +10,6 @@ import time
 
 import psycopg
 
-PG_BIN = "/opt/homebrew/opt/postgresql@18/bin"
 DB_NAME = "olap_demo"
 
 DDL = """
@@ -104,8 +103,8 @@ def run(cmd: list[str]) -> None:
 
 
 def main() -> None:
-    run([f"{PG_BIN}/dropdb", "--if-exists", DB_NAME])
-    run([f"{PG_BIN}/createdb", DB_NAME])
+    run(["dropdb", "--if-exists", DB_NAME])
+    run(["createdb", DB_NAME])
 
     with psycopg.connect(dbname=DB_NAME, autocommit=True) as conn:
         conn.execute(DDL)
