@@ -4,3 +4,14 @@ __pycache__/
 venv/
 .env
 *.log
+
+# секреты никогда не попадают в git (handbook standards/05-config-secrets.md)
+secrets/
+.env.*
+*.pem
+*.key
+# локальные артефакты прогона стадии wiki-code
+selfcheck.sh
+!ops/selfcheck.sh
+.status
+run_output.txt
