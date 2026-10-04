@@ -56,3 +56,8 @@
 | [lsm_tree](lsm_tree/) | [LSM-Tree (LSM-дерево)](https://bigdataschool.ru/wiki/lsm_tree/) |
 | [lambda_architecture](lambda_architecture/) | [Lambda Architecture](https://bigdataschool.ru/wiki/lambda_architecture/) |
 | [watermark](watermark/) | [Watermark в потоковой обработке данных](https://bigdataschool.ru/wiki/watermark/) |
+| [debezium](debezium/) | [Debezium](https://bigdataschool.ru/wiki/debezium/) |
+| [kafka_connect](kafka_connect/) | [Kafka Connect](https://bigdataschool.ru/wiki/kafka_connect/) |
+| [pageindex](pageindex/) | [PageIndex](https://bigdataschool.ru/wiki/pageindex/) |
+| [qdrant](qdrant/) | [Qdrant](https://bigdataschool.ru/wiki/qdrant/) |
+| [schema_registry](schema_registry/) | [Schema Registry](https://bigdataschool.ru/wiki/schema_registry/) |
