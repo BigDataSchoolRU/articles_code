@@ -1,0 +1,54 @@
+# ClickHouse 26.9.23.15 + Airflow 3.3.2 standalone, прогнано на стенде 2026-10-21
+name: blog-airflow_clickhouse_provider
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.9.23.15
+    mem_limit: 4g
+    environment:
+      CLICKHOUSE_DB: demo
+      CLICKHOUSE_USER: airflow
+      CLICKHOUSE_PASSWORD: airflow
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+    ports:
+      - "127.0.0.1:8123:8123"   # HTTP, им ходит провайдер clickhousedb
+      - "127.0.0.1:9000:9000"   # native, им ходит airflow-clickhouse-plugin
+    volumes:
+      - ch_data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--user", "airflow", "--password", "airflow", "-q", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  airflow:
+    build: .
+    image: blog-airflow_clickhouse_provider-airflow:3.3.2
+    mem_limit: 4g
+    command: standalone
+    depends_on:
+      clickhouse: { condition: service_healthy }
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "True"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      # соединение провайдера: HTTP 8123, тип clickhouse
+      AIRFLOW_CONN_CLICKHOUSE_DEFAULT: '{"conn_type": "clickhouse", "host": "clickhouse", "port": 8123, "login": "airflow", "password": "airflow", "schema": "demo"}'
+      # соединение плагина: native 9000, extra уходит в clickhouse_driver.Client как есть
+      AIRFLOW_CONN_CLICKHOUSE_NATIVE: '{"conn_type": "generic", "host": "clickhouse", "port": 9000, "login": "airflow", "password": "airflow", "schema": "demo"}'
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./:/opt/airflow/demo
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/v2/monitor/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+volumes:
+  ch_data:
