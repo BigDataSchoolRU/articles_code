@@ -1,0 +1,47 @@
+# SeaweedFS 4.48 + iceberg-rest-fixture 1.10.1, DuckDB 2.0.0 в venv на хосте, прогнано на стенде 2026-10-22
+name: blog-duckdb_lake_catalog
+
+services:
+  # S3-совместимое хранилище: Parquet-файлы, файл каталога, данные DuckLake и Iceberg
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.48
+    mem_limit: 1g
+    command: server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    ports:
+      - "127.0.0.1:8333:8333"
+    volumes:
+      - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+      - s3_data:/data
+
+  # одноразовый шаг: создаёт бакет lake и завершается
+  create_bucket:
+    image: chrislusf/seaweedfs:4.48
+    mem_limit: 256m
+    depends_on: [seaweedfs]
+    entrypoint: ["sh", "-c", "until echo 's3.bucket.create -name lake' | weed shell -master=seaweedfs:9333 2>&1 | grep -qiE 'created|exist'; do sleep 2; done; echo bucket lake ready"]
+
+  # REST-каталог Iceberg: хранит указатель на текущий metadata.json каждой таблицы
+  rest:
+    image: apache/iceberg-rest-fixture:1.10.1
+    mem_limit: 1g
+    depends_on:
+      create_bucket: { condition: service_completed_successfully }
+    environment:
+      AWS_ACCESS_KEY_ID: admin
+      AWS_SECRET_ACCESS_KEY: password123
+      AWS_REGION: us-east-1
+      CATALOG_WAREHOUSE: s3://lake/iceberg/
+      CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
+      CATALOG_S3_ENDPOINT: http://seaweedfs:8333
+      CATALOG_S3_PATH__STYLE__ACCESS: "true"
+    # JVM на холодном старте поднимается дольше встроенной проверки образа
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8181/v1/config"]
+      interval: 3s
+      retries: 40
+      start_period: 30s
+    ports:
+      - "127.0.0.1:8181:8181"
+
+volumes:
+  s3_data:
