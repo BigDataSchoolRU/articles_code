@@ -6,3 +6,4 @@
 | Папка | Статья |
 |---|---|
 | [airflow_clickhouse_provider](airflow_clickhouse_provider/) | [Провайдер ClickHouse для Airflow: загрузка без дублей](https://bigdataschool.ru/blog/news/airflow-clickhouse-provider/) |
+| [iceberg_table_statistics](iceberg_table_statistics/) | [Статистика таблиц Iceberg: Puffin, NDV и планы Trino](https://bigdataschool.ru/blog/news/iceberg-table-statistics/) |
