@@ -7,3 +7,4 @@
 |---|---|
 | [airflow_clickhouse_provider](airflow_clickhouse_provider/) | [Провайдер ClickHouse для Airflow: загрузка без дублей](https://bigdataschool.ru/blog/news/airflow-clickhouse-provider/) |
 | [iceberg_table_statistics](iceberg_table_statistics/) | [Статистика таблиц Iceberg: Puffin, NDV и планы Trino](https://bigdataschool.ru/blog/news/iceberg-table-statistics/) |
+| [kafka_consumer_rebalance_protocol](kafka_consumer_rebalance_protocol/) | [Ребалансировка в Kafka 4: KIP-848 против classic](https://bigdataschool.ru/blog/news/kafka-consumer-rebalance-protocol/) |
