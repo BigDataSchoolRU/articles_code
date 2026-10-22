@@ -3,7 +3,7 @@
 Код к статье: https://bigdataschool.ru/blog/news/iceberg-table-statistics/
 
 Стенд показывает, где Iceberg хранит NDV (number of distinct values), кто его пишет и как он
-меняет план join в Trino. NDV, посчитанный Spark, читает Trino, и наоборот.
+меняет план join в Trino. NDV, посчитанный Spark, читает Trino (обратное направление стенд не проверяет).
 
 ## Файлы
 
