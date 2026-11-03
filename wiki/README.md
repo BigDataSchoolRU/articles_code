@@ -61,3 +61,4 @@
 | [pageindex](pageindex/) | [PageIndex](https://bigdataschool.ru/wiki/pageindex/) |
 | [qdrant](qdrant/) | [Qdrant](https://bigdataschool.ru/wiki/qdrant/) |
 | [schema_registry](schema_registry/) | [Schema Registry](https://bigdataschool.ru/wiki/schema_registry/) |
+| [gguf](gguf/) | [GGUF](https://bigdataschool.ru/wiki/gguf/) |

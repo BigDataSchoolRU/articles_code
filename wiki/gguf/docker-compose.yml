@@ -1,0 +1,11 @@
+# ollama 0.40.13 в Docker, стенд для статьи про GGUF
+services:
+  ollama:
+    image: ollama/ollama:0.40.13
+    container_name: gguf-ollama
+    mem_limit: 4g
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      # каталог моделей на хосте: blob-файлы GGUF видны прямо отсюда
+      - ./ollama:/root/.ollama
