@@ -1,0 +1,19 @@
+# dbt-core 1.12.6, прогнано на стенде 2026-11-03
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Измерение витрины продаж: клиент, регион, сегмент"
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+  - name: fct_sales_daily
+    description: "Витрина продаж: выручка по дням, регионам и сегментам (table)"
+    columns:
+      - name: sale_date
+        data_tests: [not_null]
+  - name: fct_sales_daily_incr
+    description: "Та же витрина в материализации incremental"
+    columns:
+      - name: sale_date
+        data_tests: [not_null]

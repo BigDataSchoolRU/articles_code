@@ -1,0 +1,25 @@
+# dbt-core 1.12.6, dbt-duckdb 1.11.1, прогнано на стенде 2026-11-03
+name: 'data_mart_demo'
+version: '1.0.0'
+config-version: 2
+profile: 'data_mart_demo'
+
+model-paths: ["models"]
+target-path: "target"
+clean-targets: ["target"]
+
+vars:
+  # Сколько уже загруженных дней витрина пересчитывает при инкрементальном запуске.
+  # 0 = только последний день и новые: опоздавшие заказы за прошлые дни потеряются.
+  lookback_days: 0
+
+models:
+  data_mart_demo:
+    staging:
+      # Staging дешёвый и всегда свежий: представления поверх сырого слоя
+      +materialized: view
+      +schema: staging
+    marts:
+      # Витрины по умолчанию таблицы: BI читает их часто, считать на лету дорого
+      +materialized: table
+      +schema: marts

@@ -1,0 +1,9 @@
+# dbt-duckdb 1.11.1, локальный файл DuckDB рядом с проектом, прогнано на стенде 2026-11-03
+data_mart_demo:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: warehouse.duckdb
+      schema: main
+      threads: 2
