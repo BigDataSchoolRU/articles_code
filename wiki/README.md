@@ -62,3 +62,4 @@
 | [qdrant](qdrant/) | [Qdrant](https://bigdataschool.ru/wiki/qdrant/) |
 | [schema_registry](schema_registry/) | [Schema Registry](https://bigdataschool.ru/wiki/schema_registry/) |
 | [gguf](gguf/) | [GGUF](https://bigdataschool.ru/wiki/gguf/) |
+| [idempotency](idempotency/) | [Идемпотентность](https://bigdataschool.ru/wiki/idempotency/) |
