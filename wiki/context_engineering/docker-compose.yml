@@ -1,0 +1,15 @@
+# ollama 0.40.13 в Docker, стенд для статьи про Context engineering, проверено на стенде 2026-11-05
+services:
+  ollama:
+    image: ollama/ollama:0.40.13
+    container_name: context-ollama
+    # 7-8B модели в q4 занимают около 5 ГБ, плюс KV-кэш на num_ctx 8192
+    mem_limit: 10g
+    environment:
+      # Ollama видит память хоста, а не лимит контейнера: две модели сразу
+      # не влезают в 10 ГБ, и ядро убивает llama-server по OOM
+      OLLAMA_MAX_LOADED_MODELS: "1"
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ./ollama:/root/.ollama
