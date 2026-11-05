@@ -1,0 +1,34 @@
+# postgres 18.6 в Docker, прогнано на стенде 2026-11-05: один сервер для демо WAL
+services:
+  pg:
+    image: postgres:18.6
+    container_name: wal-pg
+    mem_limit: 1g
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: waldemo
+    # маленький max_wal_size, чтобы контрольные точки по объёму журнала случались на демо-нагрузке;
+    # checkpoint_timeout побольше, чтобы плановая контрольная точка не вмешалась в сценарий сбоя
+    command: >
+      postgres
+      -c max_wal_size=64MB
+      -c min_wal_size=32MB
+      -c checkpoint_timeout=30min
+      -c log_checkpoints=on
+    ports:
+      - "127.0.0.1:55434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      # SQL-сценарии и скрипт pgbench видны внутри контейнера в /demo
+      - ./sql:/demo/sql:ro
+      - ./insert.sql:/demo/insert.sql:ro
+    healthcheck:
+      # -h 127.0.0.1: на время initdb временный сервер слушает только сокет, по TCP готов уже рабочий
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U demo -d waldemo"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  pgdata:
