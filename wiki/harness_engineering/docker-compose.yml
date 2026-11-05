@@ -1,4 +1,4 @@
-# ollama 0.40.13 в Docker, стенд для статьи про Harness engineering
+# ollama 0.40.13 в Docker, стенд для статьи про Harness engineering, проверено на стенде 2026-11-05
 services:
   ollama:
     image: ollama/ollama:0.40.13

@@ -1,4 +1,4 @@
-# тесты задачи, unittest из stdlib Python 3.12; агенту их менять нельзя
+# тесты задачи, unittest из stdlib Python 3.12, проверено на стенде 2026-11-05; агенту их менять нельзя
 import unittest
 
 from duration import parse_duration
