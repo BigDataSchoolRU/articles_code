@@ -1,4 +1,4 @@
-# RUNBOOK: косвенная prompt injection в письме против четырёх защит
+# RUNBOOK: косвенная prompt injection в письме против трёх защит
 
 ## Окружение
 

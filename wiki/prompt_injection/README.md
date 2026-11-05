@@ -31,6 +31,7 @@ Docker. На CPU один вызов модели идёт 30-120 секунд, 
 
 ```bash
 ollama pull qwen2.5:7b
+ollama pull llama3.1:8b
 # пилот: один вызов, чтобы оценить время на вашей машине
 PILOT=1 python3 injection_demo.py qwen2.5:7b
 python3 injection_demo.py qwen2.5:7b
