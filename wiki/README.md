@@ -70,3 +70,4 @@
 | [prompt_injection](prompt_injection/) | [Prompt injection](https://bigdataschool.ru/wiki/prompt_injection/) |
 | [context_engineering](context_engineering/) | [Context engineering](https://bigdataschool.ru/wiki/context_engineering/) |
 | [write_ahead_log](write_ahead_log/) | [WAL](https://bigdataschool.ru/wiki/write_ahead_log/) |
+| [acid](acid/) | [ACID](https://bigdataschool.ru/wiki/acid/) |
