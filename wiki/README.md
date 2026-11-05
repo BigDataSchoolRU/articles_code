@@ -65,3 +65,4 @@
 | [idempotency](idempotency/) | [Идемпотентность](https://bigdataschool.ru/wiki/idempotency/) |
 | [data_mart](data_mart/) | [Витрина данных](https://bigdataschool.ru/wiki/data_mart/) |
 | [oltp](oltp/) | [OLTP](https://bigdataschool.ru/wiki/oltp/) |
+| [harness_engineering](harness_engineering/) | [Harness engineering](https://bigdataschool.ru/wiki/harness_engineering/) |
