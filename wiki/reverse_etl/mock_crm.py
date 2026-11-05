@@ -73,7 +73,7 @@ class Handler(BaseHTTPRequestHandler):
         body = json.loads(self.rfile.read(length) or b"{}")
         with lock:
             obj = get_object(parts[1])
-            # лимит проверяется до разбора тела запроса: отказ 429 ничего не меняет в данных
+            # лимит проверяется до применения записей: отказ 429 ничего не меняет в данных
             retry_after = take_slot()
             if retry_after:
                 obj["stats"]["throttled"] += 1
