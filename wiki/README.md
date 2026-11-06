@@ -72,3 +72,4 @@
 | [write_ahead_log](write_ahead_log/) | [WAL](https://bigdataschool.ru/wiki/write_ahead_log/) |
 | [acid](acid/) | [ACID](https://bigdataschool.ru/wiki/acid/) |
 | [agent_memory](agent_memory/) | [Agent memory](https://bigdataschool.ru/wiki/agent_memory/) |
+| [guardrails](guardrails/) | [Guardrails](https://bigdataschool.ru/wiki/guardrails/) |

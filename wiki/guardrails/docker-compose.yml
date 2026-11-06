@@ -1,0 +1,16 @@
+# ollama 0.40.13 в Docker, стенд для статьи про Guardrails, проверено на стенде 2026-11-06
+services:
+  ollama:
+    image: ollama/ollama:0.40.13
+    container_name: guardrails-ollama
+    # qwen2.5:7b в q4 занимает около 5 ГБ, классификатор llama-guard3:1b около 1.9 ГБ, плюс KV-кэш
+    mem_limit: 10g
+    environment:
+      # две модели сразу: основная и классификатор. При "1" каждый вызов классификатора
+      # выгружает основную модель, и ответ ждёт её повторной загрузки.
+      OLLAMA_MAX_LOADED_MODELS: "2"
+      OLLAMA_KEEP_ALIVE: "60m"
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ./ollama:/root/.ollama
