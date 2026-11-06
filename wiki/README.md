@@ -76,3 +76,4 @@
 | [mvcc](mvcc/) | [MVCC](https://bigdataschool.ru/wiki/mvcc/) |
 | [event_sourcing](event_sourcing/) | [Event Sourcing](https://bigdataschool.ru/wiki/event_sourcing/) |
 | [hnsw](hnsw/) | [HNSW](https://bigdataschool.ru/wiki/hnsw/) |
+| [transactional_outbox](transactional_outbox/) | [Transactional outbox](https://bigdataschool.ru/wiki/transactional_outbox/) |
