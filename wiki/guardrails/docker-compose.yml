@@ -3,7 +3,7 @@ services:
   ollama:
     image: ollama/ollama:0.40.13
     container_name: guardrails-ollama
-    # qwen2.5:7b в q4 занимает около 5 ГБ, классификатор llama-guard3:1b около 1.9 ГБ, плюс KV-кэш
+    # qwen2.5:7b в q4 занимает около 5 ГБ, классификатор llama-guard3:1b около 1.8 ГБ, плюс KV-кэш
     mem_limit: 10g
     environment:
       # две модели сразу: основная и классификатор. При "1" каждый вызов классификатора
