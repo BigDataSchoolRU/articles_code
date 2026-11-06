@@ -74,3 +74,4 @@
 | [agent_memory](agent_memory/) | [Agent memory](https://bigdataschool.ru/wiki/agent_memory/) |
 | [guardrails](guardrails/) | [Guardrails](https://bigdataschool.ru/wiki/guardrails/) |
 | [mvcc](mvcc/) | [MVCC](https://bigdataschool.ru/wiki/mvcc/) |
+| [event_sourcing](event_sourcing/) | [Event Sourcing](https://bigdataschool.ru/wiki/event_sourcing/) |
