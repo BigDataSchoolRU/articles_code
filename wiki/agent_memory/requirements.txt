@@ -1,0 +1,8 @@
+# версии, на которых снят вывод демо 2026-11-06 (Python 3.12.3, Ollama 0.40.13)
+langgraph==1.2.20
+langgraph-checkpoint==4.3.1
+langgraph-checkpoint-sqlite==3.1.3
+langchain-core==1.7.6
+langchain-ollama==1.1.0
+ollama==0.6.3
+sqlite-vec==0.1.9

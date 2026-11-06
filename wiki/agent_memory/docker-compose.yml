@@ -1,0 +1,16 @@
+# ollama 0.40.13 в Docker, стенд для статьи про Agent memory, проверено на стенде 2026-11-06
+services:
+  ollama:
+    image: ollama/ollama:0.40.13
+    container_name: agent-memory-ollama
+    # 7B модель в q4 занимает около 5 ГБ, плюс KV-кэш и модель эмбеддингов
+    mem_limit: 10g
+    environment:
+      # две модели сразу: qwen2.5:7b (около 5 ГБ) и nomic-embed-text (0.4 ГБ).
+      # При "1" каждый эмбеддинг поиска по памяти выгружает модель агента,
+      # и следующий ответ ждёт её повторной загрузки. Две 7-8B модели в 10 ГБ не влезут.
+      OLLAMA_MAX_LOADED_MODELS: "2"
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ./ollama:/root/.ollama

@@ -71,3 +71,4 @@
 | [context_engineering](context_engineering/) | [Context engineering](https://bigdataschool.ru/wiki/context_engineering/) |
 | [write_ahead_log](write_ahead_log/) | [WAL](https://bigdataschool.ru/wiki/write_ahead_log/) |
 | [acid](acid/) | [ACID](https://bigdataschool.ru/wiki/acid/) |
+| [agent_memory](agent_memory/) | [Agent memory](https://bigdataschool.ru/wiki/agent_memory/) |
