@@ -1,3 +1,4 @@
+# requirements.txt, пины по факту установки на стенде 2026-11-06
 hnswlib==0.8.0
 faiss-cpu==1.15.1
 numpy==2.5.4
