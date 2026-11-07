@@ -79,3 +79,4 @@
 | [transactional_outbox](transactional_outbox/) | [Transactional outbox](https://bigdataschool.ru/wiki/transactional_outbox/) |
 | [rag_evaluation](rag_evaluation/) | [RAG evaluation](https://bigdataschool.ru/wiki/rag_evaluation/) |
 | [chunking](chunking/) | [Chunking](https://bigdataschool.ru/wiki/chunking/) |
+| [star_schema](star_schema/) | [Star schema](https://bigdataschool.ru/wiki/star_schema/) |
