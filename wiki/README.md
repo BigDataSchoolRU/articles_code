@@ -78,3 +78,4 @@
 | [hnsw](hnsw/) | [HNSW](https://bigdataschool.ru/wiki/hnsw/) |
 | [transactional_outbox](transactional_outbox/) | [Transactional outbox](https://bigdataschool.ru/wiki/transactional_outbox/) |
 | [rag_evaluation](rag_evaluation/) | [RAG evaluation](https://bigdataschool.ru/wiki/rag_evaluation/) |
+| [chunking](chunking/) | [Chunking](https://bigdataschool.ru/wiki/chunking/) |

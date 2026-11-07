@@ -1,0 +1,9 @@
+# версии, на которых снят вывод демо 2026-11-07 (Python 3.12.3, Ollama 0.40.13, nomic-embed-text)
+langchain-text-splitters==1.1.3
+langchain-core==1.7.6
+llama-index-core==0.14.25
+llama-index-embeddings-ollama==0.10.0
+ollama==0.6.3
+tiktoken==0.14.0
+nltk==3.10.4
+numpy==2.5.4

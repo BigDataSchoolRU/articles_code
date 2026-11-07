@@ -1,0 +1,11 @@
+# ollama 0.40.13 в Docker, стенд для статьи про Chunking, проверено на стенде 2026-11-07
+services:
+  ollama:
+    image: ollama/ollama:0.40.13
+    container_name: chunking-ollama
+    # нужна только модель эмбеддингов nomic-embed-text (около 0.4 ГБ), генеративная модель в демо не участвует
+    mem_limit: 4g
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ./ollama:/root/.ollama
