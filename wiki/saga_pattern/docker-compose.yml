@@ -1,0 +1,27 @@
+# postgres 18.6 в Docker, прогнано на стенде 2026-11-12: один сервер, в нём базы трёх сервисов и журнал саги
+services:
+  pg:
+    image: postgres:18.6
+    container_name: saga-pattern-pg
+    mem_limit: 1g
+    # max_prepared_transactions > 0 нужен только сценарию two_pc (сравнение с двухфазным коммитом)
+    command: ["postgres", "-c", "max_prepared_transactions=10"]
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    ports:
+      - "127.0.0.1:55440:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      # базы orders, inventory, payments, saga и их таблицы создаются при первом старте на чистом томе
+      - ./schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      # -h 127.0.0.1: на время initdb временный сервер слушает только сокет, по TCP готов уже рабочий
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U demo -d demo"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  pgdata:
