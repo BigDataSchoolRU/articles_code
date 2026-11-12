@@ -1,0 +1,32 @@
+Добавь к этой функции аннотации типов и docstring на русском. Логику не меняй, верни функцию целиком одним блоком кода.
+
+```python
+def merge_orders(orders, refunds, currency_rates, base_currency="RUB"):
+    totals = {}
+    for order in orders:
+        customer_id = order["customer_id"]
+        rate = currency_rates.get(order["currency"], 1.0)
+        amount = order["amount"] * rate
+        if customer_id not in totals:
+            totals[customer_id] = {"orders": 0, "amount": 0.0, "refunds": 0.0}
+        totals[customer_id]["orders"] += 1
+        totals[customer_id]["amount"] += amount
+    for refund in refunds:
+        customer_id = refund["customer_id"]
+        rate = currency_rates.get(refund["currency"], 1.0)
+        amount = refund["amount"] * rate
+        if customer_id in totals:
+            totals[customer_id]["refunds"] += amount
+            totals[customer_id]["amount"] -= amount
+    result = []
+    for customer_id, data in totals.items():
+        result.append({
+            "customer_id": customer_id,
+            "orders": data["orders"],
+            "net_amount": round(data["amount"], 2),
+            "refunds": round(data["refunds"], 2),
+            "currency": base_currency,
+        })
+    result.sort(key=lambda row: row["net_amount"], reverse=True)
+    return result
+```

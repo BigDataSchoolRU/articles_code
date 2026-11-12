@@ -80,3 +80,4 @@
 | [rag_evaluation](rag_evaluation/) | [RAG evaluation](https://bigdataschool.ru/wiki/rag_evaluation/) |
 | [chunking](chunking/) | [Chunking](https://bigdataschool.ru/wiki/chunking/) |
 | [star_schema](star_schema/) | [Star schema](https://bigdataschool.ru/wiki/star_schema/) |
+| [speculative_decoding](speculative_decoding/) | [Speculative decoding](https://bigdataschool.ru/wiki/speculative_decoding/) |
