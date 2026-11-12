@@ -1,0 +1,32 @@
+# Apache Spark 4.0.4 в образе apache/spark, openlineage-spark_2.13 1.55.0 из Maven Central; прогнано на стенде 2026-11-12
+# Сеть хоста: listener внутри контейнера отправляет события в сборщик на 127.0.0.1:5000.
+# Папка проекта монтируется по тому же абсолютному пути, что и на хосте: тогда Spark и
+# Python-клиент называют data/orders.csv одинаково, и граф склеивается по этому файлу.
+services:
+  spark:
+    image: apache/spark:4.0.4-scala2.13-java17-python3-ubuntu
+    container_name: openlineage-spark
+    network_mode: host
+    mem_limit: 3g
+    working_dir: ${PWD}
+    volumes:
+      - ./:${PWD}:ro
+    command:
+      - /opt/spark/bin/spark-submit
+      - --master
+      - local[2]
+      - --jars
+      - jars/openlineage-spark_2.13-1.55.0.jar
+      - --conf
+      - spark.extraListeners=io.openlineage.spark.agent.OpenLineageSparkListener
+      - --conf
+      - spark.openlineage.transport.type=http
+      - --conf
+      - spark.openlineage.transport.url=http://127.0.0.1:5000
+      - --conf
+      - spark.openlineage.namespace=bds_demo
+      - --conf
+      - spark.ui.enabled=false
+      - --driver-java-options
+      - -Dlog4j2.configurationFile=file:${PWD}/log4j2.properties
+      - spark_job.py

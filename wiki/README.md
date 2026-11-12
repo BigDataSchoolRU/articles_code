@@ -82,3 +82,4 @@
 | [star_schema](star_schema/) | [Star schema](https://bigdataschool.ru/wiki/star_schema/) |
 | [speculative_decoding](speculative_decoding/) | [Speculative decoding](https://bigdataschool.ru/wiki/speculative_decoding/) |
 | [saga_pattern](saga_pattern/) | [Saga pattern](https://bigdataschool.ru/wiki/saga_pattern/) |
+| [openlineage](openlineage/) | [OpenLineage](https://bigdataschool.ru/wiki/openlineage/) |

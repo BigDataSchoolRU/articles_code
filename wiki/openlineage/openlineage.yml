@@ -1,0 +1,14 @@
+# openlineage-python 1.55.0: конфигурация клиента, прогнано на стенде 2026-11-12
+# Составной транспорт: каждое событие уходит и в сборщик по HTTP, и строкой в файл.
+transport:
+  type: composite
+  continue_on_failure: true
+  transports:
+    collector:
+      type: http
+      url: http://127.0.0.1:5000
+      # путь по умолчанию api/v1/lineage, как у Marquez
+    local_file:
+      type: file
+      log_file_path: emitted.jsonl
+      append: true
