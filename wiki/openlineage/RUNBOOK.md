@@ -111,7 +111,7 @@ docker compose run --rm spark
 +--------+------+-------+--------------+
 ```
 
-Listener подключается только флагами `spark-submit` в `docker-compose.yml`:
+Listener подключается только флагами `spark-submit` в `compose.yaml`:
 `--jars jars/openlineage-spark_2.13-1.55.0.jar`,
 `spark.extraListeners=io.openlineage.spark.agent.OpenLineageSparkListener`,
 `spark.openlineage.transport.type=http`, `spark.openlineage.transport.url=http://127.0.0.1:5000`,
@@ -183,7 +183,7 @@ time .venv/bin/python emit_pipeline.py
 
 - **`Connection refused` при шаге 3 или 4.** Сборщик не запущен или занят порт 5000. Проверьте
   `ss -ltn | grep 5000`, при другом порте поменяйте `url` в `openlineage.yml` и
-  `spark.openlineage.transport.url` в `docker-compose.yml`.
+  `spark.openlineage.transport.url` в `compose.yaml`.
 - **Spark не достучался до сборщика на macOS или Windows.** `network_mode: host` работает только
   в Linux. В Docker Desktop замените адрес на `http://host.docker.internal:5000` и уберите
   `network_mode`, а сборщик запустите как `collector.py serve --host 0.0.0.0`.

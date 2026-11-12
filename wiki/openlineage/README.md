@@ -16,7 +16,7 @@ OpenLineage ничего, события за него шлёт listener `openli
 | `emit_pipeline.py` | конвейер из двух заданий (CSV → `staging.orders_clean` → `mart.daily_revenue` в SQLite), события START, FAIL и COMPLETE с фасетами схемы, SQL, ошибки и колоночного lineage; режим `broken` называет тот же CSV относительным путём |
 | `openlineage.yml` | конфигурация клиента: составной транспорт, HTTP в сборщик плюс запись в файл `emitted.jsonl` |
 | `spark_job.py` | обычное Spark-задание: выручка по клиентам из CSV в Parquet, без единой строки OpenLineage |
-| `docker-compose.yml` | Spark 4.0.4 в образе `apache/spark` и `spark-submit` с listener'ом OpenLineage |
+| `compose.yaml` | Spark 4.0.4 в образе `apache/spark` и `spark-submit` с listener'ом OpenLineage |
 | `log4j2.properties` | оставляет в консоли Spark только ошибки и строки об отправке событий |
 | `data/orders.csv` | 10 заказов, общий источник для обоих производителей |
 | `requirements.txt` | `openlineage-python==1.55.0` |

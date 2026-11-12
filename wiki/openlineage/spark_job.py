@@ -3,7 +3,7 @@
 
 В коде нет ни строки OpenLineage. События START, RUNNING и COMPLETE с входом, выходом,
 схемой и колоночным lineage отправляет OpenLineageSparkListener, подключённый через
-spark-submit (--jars и --conf spark.extraListeners, см. docker-compose.yml).
+spark-submit (--jars и --conf spark.extraListeners, см. compose.yaml).
 """
 import sys
 from pathlib import Path
