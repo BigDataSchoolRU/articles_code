@@ -1,0 +1,20 @@
+# Apache Spark 4.0.4 в образе apache/spark, прогнано на стенде 2026-11-13
+# Папка проекта монтируется только на чтение по тому же абсолютному пути, что и на хосте.
+# Образ работает от uid 185, поэтому входные файлы и чекпойнты скрипт держит в /tmp контейнера.
+services:
+  spark:
+    image: apache/spark:4.0.4-scala2.13-java17-python3-ubuntu
+    container_name: windowing-spark
+    mem_limit: 3g
+    working_dir: ${PWD}
+    volumes:
+      - ./:${PWD}:ro
+    command:
+      - /opt/spark/bin/spark-submit
+      - --master
+      - local[2]
+      - --conf
+      - spark.ui.enabled=false
+      - --driver-java-options
+      - -Dlog4j2.configurationFile=file:${PWD}/log4j2.properties
+      - windows_demo.py
