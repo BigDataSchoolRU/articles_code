@@ -122,7 +122,7 @@ for w in q:
     print(f"{w:<18}{f:>4}{df.get(w, 0):>4}{i:>8.4f}{part:>10.4f}{i * part:>9.4f}")
 print(f"{'итого':<18}{'':>26}{total:>9.4f}   bm25s: {lib_scores('bm25s lucene', q)[best]:.4f}")
 
-# 3. Одинаковые данные, разные числа и разный порядок
+# 3. Одинаковые данные, разные числа, сравниваем порядок
 for key in ("q1", "q4"):
     q = tokenize(QUERIES[key])
     print(f"\n=== 3. Топ-5 по запросу «{QUERIES[key]}» ===")
