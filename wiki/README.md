@@ -86,3 +86,4 @@
 | [bm25](bm25/) | [BM25](https://bigdataschool.ru/wiki/bm25/) |
 | [windowing](windowing/) | [Windowing](https://bigdataschool.ru/wiki/windowing/) |
 | [active_metadata](active_metadata/) | [Active metadata](https://bigdataschool.ru/wiki/active_metadata/) |
+| [kappa_architecture](kappa_architecture/) | [Kappa Architecture](https://bigdataschool.ru/wiki/kappa_architecture/) |
