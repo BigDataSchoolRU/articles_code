@@ -87,3 +87,4 @@
 | [windowing](windowing/) | [Windowing](https://bigdataschool.ru/wiki/windowing/) |
 | [active_metadata](active_metadata/) | [Active metadata](https://bigdataschool.ru/wiki/active_metadata/) |
 | [kappa_architecture](kappa_architecture/) | [Kappa Architecture](https://bigdataschool.ru/wiki/kappa_architecture/) |
+| [contextual_retrieval](contextual_retrieval/) | [Contextual Retrieval](https://bigdataschool.ru/wiki/contextual_retrieval/) |

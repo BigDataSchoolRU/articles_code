@@ -1,0 +1,15 @@
+# ollama 0.40.13 в Docker, стенд для статьи про Contextual Retrieval, прогнано на стенде 2026-11-14
+services:
+  ollama:
+    image: ollama/ollama:0.40.13
+    container_name: contextual-retrieval-ollama
+    # qwen2.5:7b в q4 около 5 ГБ, плюс KV-кэш и модель эмбеддингов
+    mem_limit: 10g
+    environment:
+      # две модели сразу: qwen2.5:7b пишет контекст к чанкам, nomic-embed-text считает эмбеддинги.
+      # При "1" каждый эмбеддинг выгружал бы 7B модель, и следующий вызов ждал бы её загрузки.
+      OLLAMA_MAX_LOADED_MODELS: "2"
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ./ollama:/root/.ollama
