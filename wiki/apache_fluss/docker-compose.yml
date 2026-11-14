@@ -1,0 +1,32 @@
+# Apache Fluss 1.0.0, local cluster из бинарного дистрибутива на JDK 17 (Temurin), прогнано на стенде 2026-11-14
+# Один контейнер держит три JVM: ZooKeeper, CoordinatorServer и TabletServer, их запускает штатный
+# bin/local-cluster.sh из дистрибутива. Сам дистрибутив лежит рядом в ./fluss-1.0.0 (см. RUNBOOK, шаг 1).
+services:
+  fluss:
+    # любой образ с JDK 17+; Fluss 1.0 проверяет версию Java при старте (bin/config.sh)
+    image: ${JAVA_IMAGE:-eclipse-temurin:17-jre}
+    container_name: apache-fluss-local
+    # TabletServer в local cluster слушает случайный порт и сообщает его клиентам через метаданные,
+    # поэтому проброс отдельных портов не годится: контейнер живёт в сети хоста (Linux)
+    network_mode: host
+    # пишем логи в ./fluss-1.0.0/log от имени владельца папки, а не от root
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    mem_limit: 3g
+    environment:
+      FLUSS_HOME: /opt/fluss
+    volumes:
+      - ./fluss-1.0.0:/opt/fluss
+      - ${FLUSS_SERVER_YAML:-./server.yaml}:/opt/fluss/conf/server.yaml:ro
+    entrypoint: ["bash", "-c"]
+    # старт трёх процессов в фоне, затем ждём SIGTERM от docker compose down и гасим кластер штатно
+    command:
+      - |
+        /opt/fluss/bin/local-cluster.sh start
+        trap '/opt/fluss/bin/local-cluster.sh stop; exit 0' TERM INT
+        sleep infinity & wait
+    healthcheck:
+      # CoordinatorServer принимает клиентов на 9123; готовность TabletServer проверяют сами скрипты
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/9123'"]
+      interval: 3s
+      timeout: 3s
+      retries: 40

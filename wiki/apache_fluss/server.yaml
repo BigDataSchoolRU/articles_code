@@ -1,0 +1,14 @@
+# Apache Fluss 1.0.0, conf/server.yaml для local cluster, прогнано на стенде 2026-11-14
+# Основа: conf/server.yaml из дистрибутива 1.0.0, добавлены только лимиты памяти JVM.
+zookeeper.address: localhost:2181
+bind.listeners: FLUSS://localhost:9123
+# локальные данные TabletServer: лог-сегменты и RocksDB для таблиц с первичным ключом
+data.dir: /tmp/fluss-data
+# сюда уходят старые сегменты лога и снапшоты KV; в проде это S3, OSS или HDFS
+remote.data.dir: /tmp/fluss-remote-data
+default.bucket.number: 1
+default.replication.factor: 1
+tablet-server.id: 0
+# дистрибутив не задаёт heap, и JVM берёт четверть памяти; для демо хватает 512 МБ на сервер
+env.java.opts.all: -Xmx512m
+zookeeper.heap.mb: 128
