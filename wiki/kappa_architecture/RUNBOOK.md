@@ -9,9 +9,9 @@
 
 | Что | Версия на прогоне | Минимум |
 |---|---|---|
-| ОС | Ubuntu 24.04.4 LTS, x86_64, 4 vCPU, 16 ГБ RAM | любая с Docker |
+| ОС | Ubuntu 24.04.4 LTS, x86_64, AWS t3.xlarge (4 vCPU, 15.7 ГБ RAM) | любая с Docker |
 | Docker / Compose | 29.1.3 / 2.40.3 | Compose v2 с `up --wait` |
-| Apache Kafka | образ `apache/kafka:4.3.2`, KRaft | 3.x с KRaft тоже подойдёт |
+| Apache Kafka | образ `apache/kafka:4.3.2`, KRaft | другие версии не проверялись |
 | Python | 3.12.3 | 3.10 (в коде `int | None`) |
 | confluent-kafka | 2.16.1 (librdkafka 2.16.0) | |
 | SQLite | 3.45.1 из стандартной библиотеки Python | 3.24 (`ON CONFLICT DO UPDATE`), для подсчёта места нужен `dbstat` |
@@ -49,7 +49,7 @@ python3 -m venv .venv
 
 Скрипт создаёт топик `kappa_architecture_orders` на 3 партиции с `retention.ms=-1` и `retention.bytes=-1`:
 лог хранится бессрочно, иначе пересчитывать историю будет не из чего. Ключ сообщения это клиент, поэтому
-все события одного клиента лежат в одной партиции. Каждое десятое событие это возврат.
+все события одного клиента лежат в одной партиции. В среднем 10% событий это возвраты.
 
 ```
 топик kappa_architecture_orders создан: 3 партиции, {'retention.ms': '-1', 'retention.bytes': '-1'}
