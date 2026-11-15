@@ -23,7 +23,7 @@ FROM generate_series(1, 1000000) AS g;
 CREATE TABLE orders_by_status (LIKE orders_by_id) DISTRIBUTED BY (status);
 INSERT INTO orders_by_status SELECT * FROM orders_by_id;
 
--- Без ключа: строки раскладываются по кругу, перекоса нет, но и JOIN по ключу не будет локальным.
+-- Без ключа: строки раскладываются случайно, примерно поровну, перекоса нет, но и JOIN по ключу не будет локальным.
 CREATE TABLE orders_random (LIKE orders_by_id) DISTRIBUTED RANDOMLY;
 INSERT INTO orders_random SELECT * FROM orders_by_id;
 
