@@ -1,0 +1,3 @@
+pypaimon==2.1.0
+pyarrow==19.0.1
+pandas==2.3.3

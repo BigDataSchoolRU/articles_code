@@ -90,3 +90,4 @@
 | [contextual_retrieval](contextual_retrieval/) | [Contextual Retrieval](https://bigdataschool.ru/wiki/contextual_retrieval/) |
 | [apache_fluss](apache_fluss/) | [Apache Fluss](https://bigdataschool.ru/wiki/apache_fluss/) |
 | [apache_cloudberry](apache_cloudberry/) | [Apache Cloudberry](https://bigdataschool.ru/wiki/apache_cloudberry/) |
+| [apache_paimon](apache_paimon/) | [Apache Paimon](https://bigdataschool.ru/wiki/apache_paimon/) |

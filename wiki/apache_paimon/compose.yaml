@@ -1,0 +1,47 @@
+# Apache Spark 4.0.4 в образе apache/spark плюс paimon-spark-4.0_2.13 2.1.0, прогнано на стенде 2026-11-15
+# Папка проекта монтируется только на чтение. Хранилище таблиц и jar берутся из переменных
+# PAIMON_WAREHOUSE и PAIMON_JARS (абсолютные пути), по умолчанию ./warehouse и ./jars.
+# Контейнер работает от uid владельца хранилища, иначе Spark (uid 185) не запишет компакцию.
+# Такого uid нет в /etc/passwd образа, а Hadoop внутри Spark без имени пользователя не стартует
+# (LoginException: invalid null input: name), поэтому passwd подменяется встроенным конфигом.
+configs:
+  passwd:
+    content: |
+      root:x:0:0:root:/root:/bin/bash
+      paimon:x:${HOST_UID:-1000}:${HOST_GID:-1000}:paimon:/tmp:/bin/false
+services:
+  spark-sql:
+    image: apache/spark:4.0.4-scala2.13-java17-python3-ubuntu
+    container_name: apache-paimon-spark
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    mem_limit: 3g
+    working_dir: /tmp   # spark-sql создаёт metastore_db и derby.log в каталоге запуска
+    configs:
+      - source: passwd
+        target: /etc/passwd
+    volumes:
+      - ./:${PWD}:ro
+      - ${PAIMON_WAREHOUSE:-./warehouse}:/warehouse
+      - ${PAIMON_JARS:-./jars}:/jars:ro
+    command:
+      - /opt/spark/bin/spark-sql
+      - --master
+      - local[2]
+      - --jars
+      - /jars/paimon-spark-4.0_2.13-2.1.0.jar
+      - --conf
+      - spark.sql.catalog.paimon=org.apache.paimon.spark.SparkCatalog
+      - --conf
+      - spark.sql.catalog.paimon.warehouse=file:/warehouse
+      - --conf
+      - spark.sql.extensions=org.apache.paimon.spark.extensions.PaimonSparkSessionExtensions
+      - --conf
+      - spark.jars.ivy=/tmp/.ivy2
+      - --conf
+      - spark.ui.enabled=false
+      - --conf
+      - spark.sql.cli.print.header=true
+      - --driver-java-options
+      - -Duser.home=/tmp -Dlog4j2.configurationFile=file:${PWD}/log4j2.properties
+      - -f
+      - ${PWD}/compaction.sql
