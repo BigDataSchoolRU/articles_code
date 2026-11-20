@@ -9,3 +9,4 @@
 | [duckdb_lake_catalog](duckdb_lake_catalog/) | [Каталог озера данных на DuckDB: views, DuckLake, Iceberg](https://bigdataschool.ru/blog/news/duckdb-lake-catalog/) |
 | [iceberg_table_statistics](iceberg_table_statistics/) | [Статистика таблиц Iceberg: Puffin, NDV и планы Trino](https://bigdataschool.ru/blog/news/iceberg-table-statistics/) |
 | [kafka_consumer_rebalance_protocol](kafka_consumer_rebalance_protocol/) | [Ребалансировка в Kafka 4: KIP-848 против classic](https://bigdataschool.ru/blog/news/kafka-consumer-rebalance-protocol/) |
+| [duckdb_local_analytics](duckdb_local_analytics/) | [DuckDB для локальной аналитики: SQL по файлам без сервера БД](https://bigdataschool.ru/blog/news/duckdb-local-analytics/) |
