@@ -37,7 +37,7 @@ python3 -m venv .venv
 .venv/bin/python query_files.py
 ```
 
-В выводе две строки вида `--- parquet: 0.357 с, 250 групп, тип результата pandas.core.frame.DataFrame` и такая же для csv, затем типы столбцов, которые вывел `read_csv`.
+В выводе две строки вида `--- parquet: 0.599 с, 250 групп, тип результата pandas.core.frame.DataFrame` и такая же для csv, затем типы столбцов, которые вывел `read_csv`.
 Шаг прошёл, если последняя строка `Сверка parquet и csv: группы совпали=True, counts совпали=True`, а разница выручки близка к нулю.
 
 ## Шаг 4. EXPLAIN ANALYZE и pushdown
