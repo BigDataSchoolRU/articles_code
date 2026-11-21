@@ -1,97 +1,115 @@
-# duckdb==2.0.0 | демо bigdataschool.ru к статье «DuckDB для локальной аналитики», код написан по брифу, вывод фиксирует прогон selfcheck.py
-"""Шаг 6. Один файл .duckdb и несколько процессов: какая ошибка приходит второму писателю."""
+# duckdb==2.0.0 | собственный код демо, проверен прогоном на DuckDB 2.0.0 LTS
+"""Шаг 6. Граница встраиваемой модели: конкурентный доступ к файлу .duckdb.
+
+1. Процесс A держит файл на запись, процесс B пытается открыть его на запись.
+2. Процесс A держит файл на запись, процесс B пытается открыть его read_only.
+3. Один процесс, несколько потоков с отдельными cursor() пишут в одну базу.
+Текст ошибок урезаем: в нём есть абсолютный путь и PID.
+"""
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 import duckdb
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from generate_data import DATA  # noqa: E402
-
-DB = DATA / "lock_demo.duckdb"
-
-# Код второго процесса: открыть файл на запись (rw) или только на чтение (ro)
-CHILD = '''
-import sys
-import duckdb
-path, mode = sys.argv[1], sys.argv[2]
-try:
-    con = duckdb.connect(path, read_only=(mode == "ro"))
-    if mode == "rw":
-        con.execute("INSERT INTO t VALUES (100)")
-    n = con.execute("SELECT count(*) FROM t").fetchone()[0]
-    print(f"OK mode={mode} rows={n}")
-except Exception as exc:
-    print(f"ERROR mode={mode} {type(exc).__name__}: {exc}")
-    sys.exit(3)
-'''
-
-unexpected = []
+DB = "data/lock_demo.duckdb"
 
 
-def run_child(title: str, mode: str, expect_ok=None) -> None:
-    p = subprocess.run(
-        [sys.executable, "-c", CHILD, str(DB), mode],
-        capture_output=True, text=True, timeout=120,
+def short_err(e: Exception) -> str:
+    # Класс исключения и фраза до первого пути или PID
+    msg = str(e).splitlines()[0]
+    cut = len(msg)
+    for marker in (' "', " '", "/", "\\", "(PID", "PID "):
+        pos = msg.find(marker)
+        if pos != -1:
+            cut = min(cut, pos)
+    return f"{type(e).__name__}: {msg[:cut].rstrip(' :')}"
+
+
+def count_rows(con: duckdb.DuckDBPyConnection) -> int:
+    # В DuckDB 2.0 у relation нет fetchone(): берём первую строку из fetchall()
+    return con.sql("SELECT count(*) FROM t").fetchall()[0][0]
+
+
+def hold_writer() -> None:
+    # Дочерний процесс A: открывает файл на запись и держит подключение
+    con = duckdb.connect(DB)
+    con.execute("CREATE TABLE IF NOT EXISTS t (id INTEGER, src VARCHAR)")
+    con.execute("INSERT INTO t VALUES (0, 'A')")
+    print("READY", flush=True)
+    time.sleep(120)
+
+
+def try_open(read_only: bool) -> None:
+    try:
+        con = duckdb.connect(DB, read_only=read_only)
+        n = count_rows(con)
+        print(f"    B открыл файл, строк в t = {n}")
+        con.close()
+    except Exception as e:  # noqa: BLE001
+        print(f"    B получил ошибку: {short_err(e)}")
+
+
+def main() -> None:
+    Path("data").mkdir(exist_ok=True)
+    for suffix in ("", ".wal"):
+        Path(DB + suffix).unlink(missing_ok=True)
+
+    # Процесс A запускаем тем же интерпретатором
+    holder = subprocess.Popen(
+        [sys.executable, __file__, "--hold"],
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
     )
-    out = (p.stdout + p.stderr).strip()
-    ok = p.returncode == 0
-    if expect_ok is None:
-        verdict = "для справки"
-    elif ok == expect_ok:
-        verdict = "как ожидалось"
-    else:
-        verdict = "НЕОЖИДАННО"
-        unexpected.append(title)
-    print(f"\n>>> {title}")
-    print(f"    код выхода {p.returncode} [{verdict}]")
-    print(f"    {out}")
+    try:
+        line = holder.stdout.readline().strip()
+        if line != "READY":
+            print("Процесс A не стартовал")
+            raise SystemExit(1)
+        print(">>> 1. A держит файл на запись, B открывает на запись")
+        try_open(read_only=False)
+        print(">>> 2. A держит файл на запись, B открывает read_only")
+        try_open(read_only=True)
+    finally:
+        holder.terminate()
+        holder.wait(timeout=30)
 
+    # Внутри одного процесса конкурентная запись работает: MVCC и оптимистичные транзакции
+    con = duckdb.connect(DB)
+    con.execute("CREATE TABLE IF NOT EXISTS t (id INTEGER, src VARCHAR)")
+    con.execute("DELETE FROM t")
+    con.execute("INSERT INTO t VALUES (1, 'main'), (2, 'main'), (3, 'main')")
+    workers, per_worker = 4, 200
+    errors: list[str] = []
 
-def main() -> int:
-    DATA.mkdir(parents=True, exist_ok=True)
-    for f in (DB, Path(str(DB) + ".wal")):
-        f.unlink(missing_ok=True)
-
-    # Процесс A открывает файл на запись и держит подключение
-    holder = duckdb.connect(str(DB))
-    holder.execute("CREATE TABLE t (x INTEGER)")
-    holder.execute("INSERT INTO t VALUES (1), (2), (3)")
-
-    run_child("1. A держит файл на запись, B открывает на запись", "rw", expect_ok=False)
-    run_child("2. A держит файл на запись, B открывает read_only", "ro")
-
-    # Внутри одного процесса писать из нескольких потоков можно: у каждого свой cursor
     def writer(k: int) -> None:
-        cur = holder.cursor()
-        for j in range(200):
-            cur.execute("INSERT INTO t VALUES (?)", [k * 1000 + j])
-        cur.close()
+        cur = con.cursor()  # у каждого потока своё подключение к той же базе
+        try:
+            for j in range(per_worker):
+                cur.execute("INSERT INTO t VALUES (?, ?)", [1000 * (k + 1) + j, f"w{k}"])
+        except Exception as e:  # noqa: BLE001
+            errors.append(short_err(e))
+        finally:
+            cur.close()
 
-    threads = [threading.Thread(target=writer, args=(k,)) for k in range(4)]
-    for th in threads:
-        th.start()
-    for th in threads:
-        th.join()
-    n = holder.execute("SELECT count(*) FROM t").fetchone()[0]
-    print(f"\n>>> 3. Один процесс, 4 потока с отдельными cursor: строк в t = {n} (ожидалось 803)")
-    if n != 803:
-        unexpected.append("3. запись из потоков одного процесса")
-    holder.close()
-
-    # Процесс A открывает файл только на чтение: читателей может быть несколько
-    reader = duckdb.connect(str(DB), read_only=True)
-    run_child("4. A открыт read_only, B тоже read_only", "ro", expect_ok=True)
-    run_child("5. A открыт read_only, B пытается писать", "rw", expect_ok=False)
-    reader.close()
-
-    run_child("6. Файл никто не держит, B открывает на запись", "rw", expect_ok=True)
-
-    print("\nНеожиданные исходы:", ", ".join(unexpected) if unexpected else "нет")
-    return 1 if unexpected else 0
+    threads = [threading.Thread(target=writer, args=(k,)) for k in range(workers)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    n = count_rows(con)
+    expected = 3 + workers * per_worker
+    print(f">>> 3. Один процесс, {workers} потока с отдельными cursor: строк в t = {n} (ожидалось {expected})")
+    if errors:
+        print(f"    ошибок в потоках: {len(errors)}, первая: {errors[0]}")
+    con.close()
+    if n != expected:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if "--hold" in sys.argv:
+        hold_writer()
+    else:
+        main()

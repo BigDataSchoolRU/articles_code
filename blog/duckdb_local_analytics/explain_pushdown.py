@@ -1,142 +1,65 @@
-# duckdb==2.0.0 | демо bigdataschool.ru к статье «DuckDB для локальной аналитики», код написан по брифу, вывод фиксирует прогон selfcheck.py
-"""Шаг 4. EXPLAIN ANALYZE по Parquet: projection pushdown, filter pushdown и пропуск групп строк по статистике."""
-import sys
+# duckdb==2.0.0 | собственный код демо, проверен прогоном на DuckDB 2.0.0 LTS
+"""Шаг 4. EXPLAIN ANALYZE: projection pushdown и filter pushdown при чтении Parquet.
+
+Запрос A читает 2 столбца из 11 без фильтра: видно, сколько байт реально прочитано.
+Запрос B фильтрует узкий диапазон дат: благодаря статистике row group
+DuckDB пропускает почти все группы. Затем тот же запрос B гоняем
+с выключенным оптимизатором filter_pushdown и сравниваем время.
+"""
 import time
-import traceback
-from pathlib import Path
 
 import duckdb
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from generate_data import PARQUET, ensure_data, q  # noqa: E402
+PQ = "read_parquet('data/orders.parquet')"
+QUERY_A = f"SELECT region, sum(price) AS s FROM {PQ} GROUP BY region"
+QUERY_B = (
+    f"SELECT count(*) AS n, sum(price * quantity) AS s FROM {PQ} "
+    "WHERE order_date BETWEEN DATE '2024-03-01' AND DATE '2024-03-07'"
+)
+KEYS = ("Projections", "Filters", "Data Read", "Row Groups", "Rows Scanned", "Total Files Read")
 
-KEYWORDS = ("scan", "parquet", "projection", "filter", "rows", "total time")
-
-
-def plan_text(con, prefix: str, sql: str) -> str:
-    rows = con.execute(prefix + " " + sql).fetchall()
-    return "\n".join(str(r[-1]) for r in rows)
-
-
-def explain(con, sql: str):
-    """EXPLAIN ANALYZE; при ошибке пробуем legacy-парсер, затем обычный EXPLAIN. Возвращает (как получен, текст)."""
-    try:
-        return "EXPLAIN ANALYZE", plan_text(con, "EXPLAIN ANALYZE", sql)
-    except duckdb.Error as exc:
-        print(f"EXPLAIN ANALYZE не прошёл: {type(exc).__name__}: {exc}")
-    try:
-        con.execute("SET enable_legacy_parser = true")
-        try:
-            return "EXPLAIN ANALYZE (legacy parser)", plan_text(con, "EXPLAIN ANALYZE", sql)
-        finally:
-            con.execute("SET enable_legacy_parser = false")
-    except duckdb.Error as exc:
-        print(f"EXPLAIN ANALYZE с legacy-парсером не прошёл: {type(exc).__name__}: {exc}")
-    try:
-        return "EXPLAIN", plan_text(con, "EXPLAIN", sql)
-    except duckdb.Error as exc:
-        print(f"EXPLAIN не прошёл: {type(exc).__name__}: {exc}")
-    return "нет", ""
+con = duckdb.connect()
+total_cols = len(con.sql(f"SELECT * FROM {PQ} LIMIT 0").columns)
+print(f"Столбцов в файле: {total_cols}")
 
 
-def highlights(plan: str) -> list:
-    """Строки плана со сканом, проекциями, фильтрами и числом строк."""
-    return [line for line in plan.splitlines() if any(k in line.lower() for k in KEYWORDS)]
+def explain(label: str, sql: str) -> None:
+    # EXPLAIN ANALYZE исполняет запрос и возвращает план с фактическими метриками
+    plan = con.sql("EXPLAIN ANALYZE " + sql).fetchall()[0][1]
+    print(f"===== {label} =====")
+    print(plan)
+    print(f"--- ключевые строки плана {label}:")
+    for line in plan.splitlines():
+        if any(k in line for k in KEYS):
+            print(line)
 
 
-def best_time(con, sql: str, runs: int = 3) -> float:
-    times = []
+explain("Запрос A (2 столбца, без фильтра)", QUERY_A)
+explain("Запрос B (фильтр по дате)", QUERY_B)
+
+
+def best_of(sql: str, runs: int = 3) -> tuple[float, tuple]:
+    best, res = float("inf"), None
     for _ in range(runs):
         t0 = time.perf_counter()
-        con.execute(sql).fetchall()
-        times.append(time.perf_counter() - t0)
-    return min(times)
+        # В DuckDB 2.0 у relation нет fetchone(): берём первую строку из fetchall()
+        res = con.sql(sql).fetchall()[0]
+        best = min(best, time.perf_counter() - t0)
+    return best, res
 
 
-def show_plan(title: str, kind: str, plan: str) -> None:
-    print(f"\n===== {title}, получен через {kind} =====")
-    print(plan)
-    print("--- ключевые строки плана:")
-    for line in highlights(plan):
-        print(line)
+t_on, r_on = best_of(QUERY_B)
+print(f"Запрос B с оптимизатором по умолчанию: {t_on:.4f} с (лучший из 3)")
 
+# Выключаем проталкивание фильтров: теперь сканер читает все row groups
+con.execute("SET disabled_optimizers = 'filter_pushdown'")
+t_off, r_off = best_of(QUERY_B)
+print(f"Запрос B с disabled_optimizers='filter_pushdown': {t_off:.4f} с (лучший из 3)")
+explain("Запрос B без filter_pushdown", QUERY_B)
+con.execute("RESET disabled_optimizers")
 
-def main() -> int:
-    ensure_data()
-    con = duckdb.connect()
-    src = f"read_parquet('{q(PARQUET)}')"
-    meta = f"parquet_metadata('{q(PARQUET)}')"
-
-    # Что лежит в файле: число столбцов и групп строк
-    try:
-        columns = con.sql(f"DESCRIBE SELECT * FROM {src}").fetchall()
-        print(f"Столбцов в файле: {len(columns)} ({', '.join(c[0] for c in columns)})")
-    except duckdb.Error as exc:
-        print(f"DESCRIBE не прошёл: {type(exc).__name__}: {exc}")
-    try:
-        # Уникальные группы считаем в Python, чтобы не зависеть от разбора агрегатов в метаданных
-        rg_ids = {r[0] for r in con.execute(f"SELECT row_group_id FROM {meta}").fetchall()}
-        print(f"Групп строк (row groups): {len(rg_ids)}")
-    except duckdb.Error as exc:
-        print(f"parquet_metadata не прочитан: {type(exc).__name__}: {exc}")
-    try:
-        stats = con.execute(
-            f"SELECT row_group_id, stats_min, stats_max FROM {meta} "
-            "WHERE path_in_schema = 'order_id' ORDER BY row_group_id LIMIT 3"
-        ).fetchall()
-        print("min/max order_id в первых группах строк:", stats)
-    except duckdb.Error as exc:
-        print(f"Статистику групп строк прочитать не удалось: {type(exc).__name__}: {exc}")
-
-    # Запрос A: нужны 4 столбца из 8, фильтр по region и ts уходит в скан
-    q_proj = (
-        f"SELECT category, count(*) AS n, round(sum(amount), 2) AS total FROM {src} "
-        "WHERE region = 'north' AND ts >= TIMESTAMP '2026-09-01' "
-        "GROUP BY category ORDER BY total DESC LIMIT 5"
-    )
-    kind_a, plan_a = explain(con, q_proj)
-    show_plan("Запрос A (projection + filter pushdown)", kind_a, plan_a)
-    print("Запросу A нужны столбцы: category, amount, region, ts")
-
-    # Запрос B: узкий диапазон order_id, лишние группы строк отсекаются по min/max
-    q_range = (
-        f"SELECT count(*) AS n, round(sum(amount), 2) AS total FROM {src} "
-        "WHERE order_id BETWEEN 1000000 AND 1099999"
-    )
-    kind_b, plan_b = explain(con, q_range)
-    show_plan("Запрос B (диапазон по order_id)", kind_b, plan_b)
-
-    try:
-        t_on = best_time(con, q_range)
-        print(f"\nЗапрос B с оптимизатором по умолчанию: {t_on:.4f} с (лучший из 3)")
-    except duckdb.Error as exc:
-        print(f"Запрос B не выполнился: {type(exc).__name__}: {exc}")
-
-    # Граничный случай: выключаем filter_pushdown и смотрим, что меняется в плане и времени
-    try:
-        con.execute("SET disabled_optimizers = 'filter_pushdown'")
-        t_off = best_time(con, q_range)
-        print(f"Запрос B с disabled_optimizers='filter_pushdown': {t_off:.4f} с (лучший из 3)")
-        kind_off, plan_off = explain(con, q_range)
-        print(f"--- ключевые строки плана B без filter_pushdown ({kind_off}):")
-        for line in highlights(plan_off):
-            print(line)
-    except duckdb.Error as exc:
-        print(f"Отключить filter_pushdown не удалось: {type(exc).__name__}: {exc}")
-    finally:
-        try:
-            con.execute("SET disabled_optimizers = ''")
-        except duckdb.Error:
-            pass
-
-    con.close()
-    # Шаг считается пройденным, если план хотя бы одного вида получен для обоих запросов
-    return 0 if plan_a and plan_b else 1
-
-
-if __name__ == "__main__":
-    try:
-        sys.exit(main())
-    except Exception:
-        traceback.print_exc()
-        sys.exit(1)
+same = r_on[0] == r_off[0] and abs(r_on[1] - r_off[1]) < 1e-6 * max(1.0, abs(r_on[1]))
+print(f"Результаты совпали: {same}, строк в диапазоне: {r_on[0]}")
+con.close()
+if not same:
+    raise SystemExit(1)

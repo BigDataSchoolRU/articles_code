@@ -1,93 +1,74 @@
-# duckdb==2.0.0 | демо bigdataschool.ru к статье «DuckDB для локальной аналитики», код написан по брифу, вывод фиксирует прогон selfcheck.py
-"""Шаг 2. Синтетический набор заказов: генерация силами самого DuckDB, запись в Parquet и CSV.
+# duckdb==2.0.0 | собственный код демо, проверен прогоном на DuckDB 2.0.0 LTS
+"""Шаг 2. Генерируем синтетический набор заказов и пишем его в Parquet и CSV.
 
-Другие демо импортируют отсюда ensure_data() и пути к файлам.
+Данные детерминированы: значения считаются через hash(i, ...), а не random(),
+поэтому повторный прогон даёт тот же набор. Заказы упорядочены по дате,
+это важно для шага 4: статистика min/max по row group позволяет пропускать группы.
 """
 import argparse
-import sys
 import time
 from pathlib import Path
 
 import duckdb
 
-BASE = Path(__file__).resolve().parent
-DATA = BASE / "data"
-PARQUET = DATA / "orders.parquet"
-CSV = DATA / "orders.csv"
-MARKER = DATA / "rows.txt"
-DEFAULT_ROWS = 5_000_000
+parser = argparse.ArgumentParser()
+parser.add_argument("--rows", type=int, default=5_000_000)
+args = parser.parse_args()
+n = args.rows
 
-# Значения детерминированы через hash(i), поэтому набор одинаков при любом числе потоков
-GEN_SQL = """
-SELECT
-    i AS order_id,
-    TIMESTAMP '2026-01-01 00:00:00'
-        + to_seconds(CAST(hash(i * 3) % 25920000 AS BIGINT)) AS ts,
-    ['north', 'south', 'east', 'west', 'center'][1 + CAST(hash(i * 5) % 5 AS INTEGER)] AS region,
-    'cat_' || CAST(hash(i * 7) % 50 AS VARCHAR) AS category,
-    CAST(hash(i * 11) % 100000 AS DOUBLE) / 100 AS amount,
-    1 + CAST(hash(i * 13) % 10 AS INTEGER) AS qty,
-    CAST(hash(i * 17) % 200000 AS INTEGER) AS customer_id,
-    md5(CAST(i AS VARCHAR)) AS note
-FROM range({rows}) AS t(i)
+Path("data").mkdir(exist_ok=True)
+PARQUET = "data/orders.parquet"
+CSV = "data/orders.csv"
+
+con = duckdb.connect()
+
+# Генерация прямо в COPY: строки не проходят через Python
+gen_sql = f"""
+COPY (
+    SELECT
+        i AS order_id,
+        DATE '2024-01-01' + CAST(i * 730 // {n} AS INTEGER) AS order_date,
+        CAST(hash(i, 'customer') % 200000 AS INTEGER) AS customer_id,
+        ['north', 'south', 'east', 'west', 'center',
+         'ural', 'siberia', 'volga', 'far_east', 'caucasus']
+            [1 + CAST(hash(i, 'region') % 10 AS INTEGER)] AS region,
+        'cat_' || lpad(CAST(hash(i, 'category') % 25 AS VARCHAR), 2, '0') AS category,
+        CAST(hash(i, 'product') % 5000 AS INTEGER) AS product_id,
+        CAST(1 + hash(i, 'qty') % 5 AS INTEGER) AS quantity,
+        round(CAST(hash(i, 'price') % 100000 AS DOUBLE) / 100 + 1, 2) AS price,
+        CAST(hash(i, 'disc') % 4 AS DOUBLE) * 0.05 AS discount,
+        CASE hash(i, 'status') % 20
+            WHEN 0 THEN 'cancelled'
+            WHEN 1 THEN 'returned'
+            ELSE 'delivered'
+        END AS status,
+        'note ' || CAST(hash(i, 'note') % 100000 AS VARCHAR) AS comment
+    FROM range({n}) t(i)
+) TO '{PARQUET}' (FORMAT parquet, COMPRESSION zstd, ROW_GROUP_SIZE 122880)
 """
 
+t0 = time.perf_counter()
+con.execute(gen_sql)
+print(f"Parquet записан за {time.perf_counter() - t0:.2f} с")
 
-def q(path: Path) -> str:
-    """Путь как строковый литерал SQL."""
-    return str(path).replace("'", "''")
-
-
-def mb(path: Path) -> float:
-    return path.stat().st_size / 1024 / 1024
-
-
-def build(rows: int) -> None:
-    DATA.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
-
-    t0 = time.perf_counter()
-    con.execute(f"CREATE TABLE orders AS {GEN_SQL.format(rows=int(rows))}")
-    print(f"Сгенерировано строк: {rows:,} за {time.perf_counter() - t0:.2f} с")
-
-    # Parquet: колоночный формат, zstd, группы строк по 122 880 строк (min/max статистика на группу)
-    t0 = time.perf_counter()
-    con.execute(
-        f"COPY orders TO '{q(PARQUET)}' (FORMAT parquet, COMPRESSION zstd, ROW_GROUP_SIZE 122880)"
-    )
-    print(f"Parquet записан за {time.perf_counter() - t0:.2f} с")
-
-    # CSV: тот же набор построчным текстом, для сравнения размера и скорости чтения
-    t0 = time.perf_counter()
-    con.execute(f"COPY orders TO '{q(CSV)}' (FORMAT csv, HEADER true)")
-    print(f"CSV записан за {time.perf_counter() - t0:.2f} с")
-
-    MARKER.write_text(str(rows), encoding="utf-8")
-    print(f"{PARQUET.name}: {mb(PARQUET):8.1f} MB")
-    print(f"{CSV.name}:     {mb(CSV):8.1f} MB")
-    print(f"CSV больше Parquet в {mb(CSV) / mb(PARQUET):.1f} раза")
-
-    print("Первые строки набора:")
-    print(con.sql("SELECT * FROM orders ORDER BY order_id LIMIT 3").df().to_string(index=False))
-    con.close()
+# CSV делаем из того же Parquet, чтобы наборы были идентичны
+t0 = time.perf_counter()
+con.execute(f"COPY (SELECT * FROM read_parquet('{PARQUET}')) TO '{CSV}' (FORMAT csv, HEADER true)")
+print(f"CSV записан за {time.perf_counter() - t0:.2f} с")
 
 
-def ensure_data(rows: int = DEFAULT_ROWS) -> None:
-    """Создаёт набор, если его нет или он другого размера."""
-    ok = PARQUET.exists() and CSV.exists() and MARKER.exists()
-    if ok and MARKER.read_text(encoding="utf-8").strip() == str(rows):
-        return
-    print("Набор данных не найден, генерирую...")
-    build(rows)
+def scalar(sql: str):
+    # В DuckDB 2.0 у relation нет fetchone(): берём первую строку из fetchall()
+    return con.sql(sql).fetchall()[0][0]
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Генерация синтетических заказов в Parquet и CSV")
-    parser.add_argument("--rows", type=int, default=DEFAULT_ROWS)
-    args = parser.parse_args()
-    build(args.rows)
-    return 0
+rows = scalar(f"SELECT count(*) FROM read_parquet('{PARQUET}')")
+row_groups = scalar(f"SELECT count(DISTINCT row_group_id) FROM parquet_metadata('{PARQUET}')")
+cols = len(con.sql(f"SELECT * FROM read_parquet('{PARQUET}') LIMIT 0").columns)
 
-
-if __name__ == "__main__":
-    sys.exit(main())
+print(f"Строк: {rows:,}".replace(",", " "))
+print(f"Столбцов: {cols}, row groups в Parquet: {row_groups}")
+for name, path in (("orders.parquet", PARQUET), ("orders.csv", CSV)):
+    size_mb = Path(path).stat().st_size / 1024 / 1024
+    print(f"{name + ':':<20}{size_mb:>6.1f} MB  ({path})")
+con.close()

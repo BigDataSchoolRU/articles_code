@@ -1,4 +1,4 @@
-# Пины для статьи duckdb-local-analytics: DuckDB 2.0.0 LTS взят из брифа, pandas и pyarrow закреплены под прогон
+# Пины версий для демо duckdb_local_analytics, проверено прогоном на DuckDB 2.0.0 LTS, Python 3.12
 duckdb==2.0.0
 pandas==2.3.3
 pyarrow==22.0.0

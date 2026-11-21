@@ -1,163 +1,135 @@
-# duckdb==2.0.0 | демо bigdataschool.ru к статье «DuckDB для локальной аналитики», код написан по брифу, вывод фиксирует прогон selfcheck.py
-"""Шаг 7. SET memory_limit и out-of-core: тяжёлый GROUP BY без лимита, с лимитом 256MB и с заведомо малым лимитом.
+# duckdb==2.0.0 | собственный код демо, проверен прогоном на DuckDB 2.0.0 LTS
+"""Шаг 7. SET memory_limit и out-of-core: тяжёлая агрегация с лимитом памяти.
 
-Каждая конфигурация идёт в отдельном процессе, чтобы пик RSS не смешивался.
+Каждый лимит прогоняется в отдельном процессе, чтобы честно снять пиковый RSS.
+Пик spill считаем опросом каталога temp_directory во время запроса.
+Ожидание: без лимита запрос идёт в памяти, с умеренным лимитом DuckDB
+сбрасывает промежуточные данные на диск, со слишком малым падает с OOM.
 """
-import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
 import threading
 import time
-import traceback
 from pathlib import Path
 
-import duckdb
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from generate_data import DATA, PARQUET, ensure_data, q  # noqa: E402
-
-CONFIGS = ["none", "256MB", "20MB"]
-
-# note уникален для каждой строки: хеш-таблица агрегата на 5 млн групп
+LIMITS = ["none", "256MB", "20MB"]
+# Почти уникальная пара ключей: около 5 млн групп в хеш-агрегате
 QUERY = """
-SELECT note, customer_id, round(sum(amount * qty), 2) AS revenue
-FROM read_parquet('{src}')
-GROUP BY note, customer_id
-ORDER BY revenue DESC, note
-LIMIT 5
+SELECT count(*) AS groups, sum(rev) AS total
+FROM (
+    SELECT customer_id, product_id, sum(quantity * price) AS rev
+    FROM read_parquet('data/orders.parquet')
+    GROUP BY customer_id, product_id
+)
 """
 
 
-def setting(con, name: str) -> str:
-    """Значение настройки через duckdb_settings(); текст ошибки, если прочитать не удалось."""
-    try:
-        row = con.execute("SELECT value FROM duckdb_settings() WHERE name = ?", [name]).fetchone()
-        return str(row[0]) if row is not None else "<нет в duckdb_settings()>"
-    except duckdb.Error as exc:
-        return f"<не удалось прочитать: {type(exc).__name__}: {exc}>"
+def short_err(e: Exception) -> str:
+    msg = str(e).splitlines()[0]
+    cut = len(msg)
+    for marker in (' "', " '", "/", "\\", "(PID", "PID "):
+        pos = msg.find(marker)
+        if pos != -1:
+            cut = min(cut, pos)
+    return f"{type(e).__name__}: {msg[:cut].rstrip(' :')}"
 
 
 def dir_size(path: Path) -> int:
     total = 0
-    for f in path.rglob("*"):
-        try:
-            if f.is_file():
-                total += f.stat().st_size
-        except OSError:
-            pass
+    for root, _, files in os.walk(path):
+        for f in files:
+            try:
+                total += os.path.getsize(os.path.join(root, f))
+            except OSError:
+                pass  # файл spill успел удалиться
     return total
 
 
-def peak_rss_mb():
-    try:
-        import resource
-    except ImportError:
-        return None
+def peak_rss_mb() -> float:
+    import resource
     r = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     # Linux отдаёт килобайты, macOS байты
     return r / 1024 / 1024 if sys.platform == "darwin" else r / 1024
 
 
-def child(limit: str) -> int:
-    spill = DATA / f"spill_{limit.lower()}"
-    shutil.rmtree(spill, ignore_errors=True)
-    spill.mkdir(parents=True)
-    result = {"limit": limit}
+def run_one(limit: str) -> None:
+    import duckdb
 
-    # Фоновый поток замеряет пиковый объём временных файлов во время запроса
-    peak = [0]
+    spill = Path("data/spill") / limit
+    shutil.rmtree(spill, ignore_errors=True)
+    spill.mkdir(parents=True, exist_ok=True)
+
+    con = duckdb.connect()
+    con.execute(f"SET temp_directory = '{spill.as_posix()}'")
+    con.execute("SET preserve_insertion_order = false")
+    if limit != "none":
+        con.execute(f"SET memory_limit = '{limit}'")
+
+    peak = {"spill": 0}
     stop = threading.Event()
 
-    def poll() -> None:
+    def watch() -> None:
         while not stop.is_set():
-            peak[0] = max(peak[0], dir_size(spill))
-            time.sleep(0.05)
+            peak["spill"] = max(peak["spill"], dir_size(spill))
+            time.sleep(0.02)
 
-    th = threading.Thread(target=poll, daemon=True)
+    w = threading.Thread(target=watch, daemon=True)
+    w.start()
     t0 = time.perf_counter()
-    con = None
+    ok, err, res = True, "", None
     try:
-        con = duckdb.connect()
-        con.execute("SET threads = 4")
-        con.execute("SET preserve_insertion_order = false")
-        # Каталог, куда DuckDB сбрасывает промежуточные данные при нехватке памяти
-        con.execute(f"SET temp_directory = '{q(spill)}'")
-        if limit != "none":
-            con.execute(f"SET memory_limit = '{limit}'")
-        print("memory_limit =", setting(con, "memory_limit"))
-
-        th.start()
-        t0 = time.perf_counter()
-        rows = con.execute(QUERY.format(src=q(PARQUET))).fetchall()
-        result.update(ok=True, rows=len(rows))
-        for r in rows:
-            print("   ", r)
-    except duckdb.Error as exc:
-        result.update(ok=False, error=f"{type(exc).__name__}: {exc}")
-        print(f"ОШИБКА {type(exc).__name__}: {exc}")
-    except Exception as exc:
-        result.update(ok=False, error=f"{type(exc).__name__}: {exc}")
-        traceback.print_exc()
-    finally:
-        stop.set()
-        if th.is_alive():
-            th.join()
-    result["seconds"] = round(time.perf_counter() - t0, 3)
-    result["peak_spill_mb"] = round(peak[0] / 1024 / 1024, 1)
-    rss = peak_rss_mb()
-    result["peak_rss_mb"] = round(rss, 1) if rss is not None else None
-    if con is not None:
-        con.close()
+        # В DuckDB 2.0 у relation нет fetchone(): берём первую строку из fetchall()
+        res = con.sql(QUERY).fetchall()[0]
+    except Exception as e:  # noqa: BLE001
+        ok, err = False, short_err(e)
+    elapsed = time.perf_counter() - t0
+    stop.set()
+    w.join()
+    con.close()
     shutil.rmtree(spill, ignore_errors=True)
-    # Строку RESULT печатаем всегда, чтобы родитель видел исход и при ошибке
-    print("RESULT " + json.dumps(result, ensure_ascii=False), flush=True)
-    return 0
+    print(json.dumps({
+        "limit": limit, "ok": ok, "time": elapsed,
+        "spill_mb": peak["spill"] / 1024 / 1024, "rss_mb": peak_rss_mb(),
+        "groups": res[0] if res else None, "error": err,
+    }, ensure_ascii=False))
 
 
-def parent() -> int:
-    ensure_data()
+def main() -> None:
     results = []
-    for limit in CONFIGS:
-        print(f"\n===== memory_limit: {limit} =====")
-        try:
-            p = subprocess.run(
-                [sys.executable, str(Path(__file__).resolve()), "--child", limit],
-                capture_output=True, text=True, timeout=1200,
-            )
-        except subprocess.TimeoutExpired:
-            results.append({"limit": limit, "ok": False, "error": "таймаут 1200 с"})
-            continue
-        print(p.stdout.rstrip())
-        if p.stderr.strip():
-            print("stderr:", p.stderr.strip())
-        found = [line for line in p.stdout.splitlines() if line.startswith("RESULT ")]
-        if found:
-            results.append(json.loads(found[-1][len("RESULT "):]))
+    for limit in LIMITS:
+        # Отдельный процесс на каждый лимит, тем же интерпретатором
+        proc = subprocess.run(
+            [sys.executable, __file__, "--run", limit],
+            capture_output=True, text=True, timeout=900,
+        )
+        line = next((l for l in reversed(proc.stdout.splitlines()) if l.startswith("{")), None)
+        if line is None:
+            results.append({"limit": limit, "ok": False, "time": 0.0, "spill_mb": 0.0,
+                            "rss_mb": 0.0, "groups": None,
+                            "error": f"процесс завершился с кодом {proc.returncode}"})
         else:
-            # Без RESULT процесс упал целиком, например убит OOM-киллером
-            results.append({"limit": limit, "ok": False, "error": f"процесс завершился с кодом {p.returncode}"})
+            results.append(json.loads(line))
 
-    print(f"\n{'лимит':<8}{'успех':>7}{'время, с':>10}{'пик spill, MB':>15}{'пик RSS, MB':>13}")
+    print(f"{'лимит':<8}{'успех':>7}{'время, с':>10}{'пик spill, MB':>15}{'пик RSS, MB':>13}")
     for r in results:
-        print(f"{r['limit']:<8}{str(r.get('ok')):>7}{str(r.get('seconds', '-')):>10}"
-              f"{str(r.get('peak_spill_mb', '-')):>15}{str(r.get('peak_rss_mb', '-')):>13}")
-        if not r.get("ok"):
-            print(f"    ошибка: {r.get('error')}")
+        print(f"{r['limit']:<8}{str(r['ok']):>7}{r['time']:>10.3f}{r['spill_mb']:>15.1f}{r['rss_mb']:>13.1f}")
+    for r in results:
+        if r["ok"]:
+            print(f"{r['limit']}: групп в результате {r['groups']}")
+        else:
+            print(f"{r['limit']}: {r['error']}")
 
-    baseline_ok = bool(results and results[0].get("ok"))
-    return 0 if baseline_ok else 1
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--child", default=None, help="служебный режим: одна конфигурация")
-    args = parser.parse_args()
-    if args.child:
-        return child(args.child)
-    return parent()
+    # Ожидаемая картина: none и 256MB проходят, 20MB падает
+    expected = {"none": True, "256MB": True}
+    if any(r["ok"] != expected[r["limit"]] for r in results if r["limit"] in expected):
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if len(sys.argv) == 3 and sys.argv[1] == "--run":
+        run_one(sys.argv[2])
+    else:
+        main()
