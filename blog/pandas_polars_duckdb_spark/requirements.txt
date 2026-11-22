@@ -1,0 +1,8 @@
+# Пины для статьи pandas_polars_duckdb_spark: версии стенда автора из брифа, PySpark 3.5.x по решению гейта (Java 11/17)
+pandas==3.0.6
+pyarrow==25.0.1
+polars==1.44.2
+duckdb==1.5.5
+pyspark==3.5.7
+numpy==2.3.5
+psutil==7.1.3
