@@ -1,0 +1,4 @@
+# pyspark 3.5.6 + py4j 0.10.9.7 + install-jdk 1.1.0 (скачивает Temurin 17, если Java нет); iceberg-spark-runtime-3.5_2.12:1.10.1 скачивается из Maven Central через spark.jars.packages при первом запуске
+pyspark==3.5.6
+py4j==0.10.9.7
+install-jdk==1.1.0

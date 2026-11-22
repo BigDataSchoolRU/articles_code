@@ -10,3 +10,4 @@
 | [iceberg_table_statistics](iceberg_table_statistics/) | [Статистика таблиц Iceberg: Puffin, NDV и планы Trino](https://bigdataschool.ru/blog/news/iceberg-table-statistics/) |
 | [kafka_consumer_rebalance_protocol](kafka_consumer_rebalance_protocol/) | [Ребалансировка в Kafka 4: KIP-848 против classic](https://bigdataschool.ru/blog/news/kafka-consumer-rebalance-protocol/) |
 | [duckdb_local_analytics](duckdb_local_analytics/) | [DuckDB для локальной аналитики: SQL по файлам без сервера БД](https://bigdataschool.ru/blog/news/duckdb-local-analytics/) |
+| [iceberg_ctas_rtas_atomicity](iceberg_ctas_rtas_atomicity/) | [Атомарные CTAS и RTAS в Apache Iceberg: каталог, staging и откат на живом прогоне](https://bigdataschool.ru/blog/news/iceberg-ctas-rtas-atomicity/) |
